@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Portal Dashboard BLU - Balai Besar Tekstil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #020b1c;
+      --bg-soft: #07162b;
+      --primary: #00a6c7; /* teal BLU */
+      --primary-dark: #00385c; /* navy / dark blue BBT */
+      --primary-soft: #04486f;
+      --accent-orange: #f9a826;
+      --accent-green: #8cc63f;
+      --text-main: #f4f8ff;
+      --text-muted: #9fb3d1;
+      --card-bg: #07162b;
+      --card-border: rgba(0, 255, 255, 0.18);
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.12) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(0, 168, 255, 0.12) 0, transparent 55%),
+        radial-gradient(circle at 50% 100%, rgba(0, 128, 255, 0.15) 0, transparent 55%),
+        linear-gradient(135deg, #000814, #001935);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      max-width: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 12px 12px 24px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* HEADER / TOP BAR */
+    header.app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.25) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(0, 168, 255, 0.25) 0, transparent 55%),
+        linear-gradient(135deg, #001a33, #004f6b);
+      box-shadow: var(--shadow-soft);
+      color: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .logo-group-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.15) 0, transparent 55%);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
+
+    .logo-bbt {
+      height: 52px;
+      max-width: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.4));
+    }
+
+    .logo-issc {
+      height: 40px;
+      max-width: 180px;
+      object-fit: contain;
+      opacity: 0.95;
+    }
+
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .header-text h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .header-text p {
+      margin: 0;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .logo-blu {
+      height: 52px;
+      width: 52px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #ffffff;
+      padding: 4px;
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.55);
+    }
+
+    @media (max-width: 980px) {
+      header.app-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-left {
+        width: 100%;
+      }
+
+      .logo-bbt { height: 44px; }
+      .logo-issc { height: 32px; }
+      .logo-blu { height: 46px; width: 46px; }
+    }
+
+    @media (max-width: 640px) {
+      .header-text h1 {
+        font-size: 1.05rem;
+      }
+
+      .header-text p {
+        font-size: 0.8rem;
+      }
+    }
+
+    /* MENU TABS */
+    .menu-card {
+      background: radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.14) 0, transparent 40%), var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 10px 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .menu-title {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .menu-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .menu-tab {
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      border: 1px solid rgba(0, 255, 255, 0.35);
+      background: rgba(2, 20, 40, 0.85);
+      color: #e6f4ff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .menu-tab span.icon {
+      font-size: 1rem;
+    }
+
+    .menu-tab.active {
+      background: linear-gradient(135deg, #00c0ff, #0089a8);
+      border-color: transparent;
+      box-shadow: 0 0 14px rgba(0, 255, 255, 0.5);
+      color: #ffffff;
+    }
+
+    .menu-tab:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.55);
+    }
+
+    /* AREA IFRAME KONTEN */
+    .content-card {
+      background: radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.12) 0, transparent 40%), var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 6px;
+      border: 1px solid var(--card-border);
+      min-height: 70vh;
+    }
+
+    .tab-content {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-frame {
+      width: 100%;
+      height: calc(100vh - 200px); /* menyesuaikan tinggi layar, supaya scroll di dalam dashboard */
+      border: none;
+      border-radius: 12px;
+      background-color: #000814;
+    }
+
+    @media (max-width: 768px) {
+      .tab-frame {
+        height: calc(100vh - 230px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- HEADER ATAS -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-group-main">
+          <!-- pastikan nama file logo sesuai dengan folder kamu -->
+          <img src="logo-bbt.png" alt="Logo Balai Besar Tekstil" class="logo-bbt" />
+          <img src="logo-issc.png" alt="Logo Industrial Services & Solution Center" class="logo-issc" />
+        </div>
+        <div class="header-text">
+          <h1>PORTAL DASHBOARD BLU</h1>
+          <p>Balai Besar Tekstil &mdash; Monitoring pendapatan dan kepuasan pelanggan.</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <img src="Logo BLU Speed.png" alt="Logo BLU Speed" class="logo-blu" />
+      </div>
+    </header>
+
+    <!-- MENU PILIH DASHBOARD -->
+    <section class="menu-card">
+      <div class="menu-title">Pilih Dashboard:</div>
+      <div class="menu-tabs">
+        <button class="menu-tab active" data-target="tab-penerimaan">
+          <span class="icon">📊</span>
+          <span>Dashboard Penerimaan 14 Layanan</span>
+        </button>
+        <button class="menu-tab" data-target="tab-ikm-nps">
+          <span class="icon">📈</span>
+          <span>Dashboard IKM &amp; NPS</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- KONTEN DASHBOARD (IFRAME) -->
+    <section class="content-card">
+      <!-- iframe 1: dashboard penerimaan 14 layanan -->
+      <div class="tab-content active" id="tab-penerimaan">
+        <!--
+          KODE INI MENGASUMSIKAN:
+          - File dashboard penerimaan: index.html
+          Kalau nanti file ini kamu jadikan index.html utama,
+          ganti src di bawah dengan nama baru file dashboard, misalnya "dashboard_penerimaan.html"
+        -->
+        <iframe src="index.html" class="tab-frame" title="Dashboard Penerimaan 14 Layanan"></iframe>
+      </div>
+
+      <!-- iframe 2: dashboard IKM & NPS -->
+      <div class="tab-content" id="tab-ikm-nps">
+        <!--
+          KODE INI MENGASUMSIKAN:
+          - File dashboard IKM & NPS: index_ikm_nps.html
+        -->
+        <iframe src="index_ikm_nps.html" class="tab-frame" title="Dashboard IKM & NPS"></iframe>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Script untuk ganti tab
+    const tabs = document.querySelectorAll(".menu-tab");
+    const contents = document.querySelectorAll(".tab-content");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const targetId = tab.getAttribute("data-target");
+
+        // aktif/nonaktif tombol
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        // tampilkan konten yang sesuai
+        contents.forEach(c => {
+          if (c.id === targetId) {
+            c.classList.add("active");
+          } else {
+            c.classList.remove("active");
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
