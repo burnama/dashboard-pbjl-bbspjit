@@ -1,0 +1,2575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard Penerimaan 14 Layanan - Balai Besar Tekstil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- ExcelJS untuk import/export Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+  <style>
+    :root {
+      --bg: #020b1c;
+      --bg-soft: #07162b;
+      --primary: #00a6c7; /* teal BLU */
+      --primary-dark: #00385c; /* navy / dark blue BBT */
+      --primary-soft: #04486f;
+      --accent-orange: #f9a826;
+      --accent-green: #8cc63f;
+      --danger: #e53935;
+      --text-main: #f4f8ff;
+      --text-muted: #9fb3d1;
+      --card-bg: #07162b;
+      --card-border: rgba(0, 255, 255, 0.18);
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.12) 0, transparent 50%),
+    radial-gradient(circle at 100% 0%, rgba(0, 168, 255, 0.12) 0, transparent 55%),
+    radial-gradient(circle at 50% 100%, rgba(0, 128, 255, 0.15) 0, transparent 55%),
+    linear-gradient(135deg, #000814, #001935);
+  color: var(--text-main);
+  min-height: 100vh;              /* isi tinggi layar */
+}
+
+   .app-shell {
+  max-width: 100%;                /* pakai lebar penuh layar */
+  width: 100%;
+  margin: 0;                      /* hilangkan margin kiri-kanan besar */
+  padding: 12px 12px 32px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+    header.app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.25) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(0, 168, 255, 0.25) 0, transparent 55%),
+        linear-gradient(135deg, #001a33, #004f6b);
+      box-shadow: var(--shadow-soft);
+      color: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .logo-group-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.15) 0, transparent 55%);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
+
+    .logo-bbt {
+      height: 52px;
+      max-width: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.4));
+    }
+
+    .logo-issc {
+      height: 40px;
+      max-width: 180px;
+      object-fit: contain;
+      opacity: 0.95;
+    }
+
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .header-text h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .header-text p {
+      margin: 0;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .logo-blu {
+      height: 52px;
+      width: 52px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #ffffff;
+      padding: 4px;
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.55);
+    }
+
+    .selector-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.37);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
+    }
+
+    .selector-group label {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .selector-group select {
+      border: none;
+      background: rgba(0, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      outline: none;
+      appearance: none;
+    }
+
+    main {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;                        /* dorong konten sampai bawah */
+}
+
+  .layout-main,
+.bottom-grid {
+  align-items: stretch;
+}
+
+    @media (max-width: 980px) {
+      header.app-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-left {
+        width: 100%;
+      }
+
+      .logo-bbt {
+        height: 44px;
+      }
+
+      .logo-issc {
+        height: 32px;
+      }
+
+      .logo-blu {
+        height: 46px;
+        width: 46px;
+      }
+
+      .layout-main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-text h1 {
+        font-size: 1.05rem;
+      }
+
+      .header-text p {
+        font-size: 0.8rem;
+      }
+
+      .selector-group label {
+        display: none;
+      }
+
+      .selector-group select {
+        font-size: 0.8rem;
+      }
+    }
+
+    .card {
+      background: radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.14) 0, transparent 40%), var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 16px;
+      border: 1px solid var(--card-border);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 1rem;
+      color: #e9f4ff;
+    }
+
+    .card-header span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 255, 0.45);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      background: rgba(2, 20, 40, 0.85);
+      color: #e6f4ff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00c0ff, #0089a8);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 0 14px rgba(0, 255, 255, 0.5);
+    }
+
+    .btn-danger {
+      border-color: rgba(229, 57, 53, 0.7);
+      color: #ffb3b3;
+      background: rgba(60, 0, 0, 0.8);
+      box-shadow: 0 0 12px rgba(229, 57, 53, 0.5);
+    }
+
+    .btn-icon {
+      font-size: 1rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+      filter: brightness(1.08);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+      filter: brightness(0.95);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 14px;
+      background: radial-gradient(circle at 0 0, rgba(0, 255, 255, 0.4) 0, transparent 40%), rgba(0, 56, 86, 0.98);
+      color: #ffffff;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow-soft);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(6px);
+      transition: all 0.2s ease;
+      z-index: 30;
+      border: 1px solid rgba(0, 255, 255, 0.6);
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .table-wrapper {
+      border-radius: 14px;
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      overflow: auto;
+      max-height: 420px;
+      background: radial-gradient(circle at 0 0, rgba(0, 255, 255, 0.08) 0, transparent 50%), #020b1c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      min-width: 760px;
+      color: #e6f4ff;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    thead tr {
+      background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(0, 168, 255, 0.1));
+    }
+
+    th,
+    td {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(15, 76, 129, 0.75);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1),
+    th:nth-child(2),
+    td:nth-child(2) {
+      text-align: left;
+    }
+
+    th {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(5, 24, 50, 0.95);
+    }
+
+    tbody tr.below-target {
+      background: rgba(96, 12, 29, 0.9);
+    }
+
+    tbody tr:hover {
+      background: rgba(13, 42, 80, 0.95);
+    }
+
+    .service-name {
+      font-weight: 600;
+      color: #f4f8ff;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      font-size: 0.78rem;
+      text-align: right;
+      background: rgba(2, 20, 40, 0.9);
+      color: #e6f4ff;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #00e0ff;
+      box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.6);
+    }
+
+    .badge-percent {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(0, 255, 255, 0.12);
+      color: #00e0ff;
+      border: 1px solid rgba(0, 255, 255, 0.6);
+    }
+
+    .badge-percent.low {
+      background: rgba(255, 205, 210, 0.1);
+      color: #ffb3b3;
+      border-color: rgba(244, 67, 54, 0.7);
+    }
+
+    .badge-percent.mid {
+      background: rgba(255, 243, 224, 0.08);
+      color: #ffcc80;
+      border-color: rgba(255, 183, 77, 0.7);
+    }
+
+    .badge-percent.high {
+      background: rgba(232, 245, 233, 0.05);
+      color: #b2ff59;
+      border-color: rgba(139, 195, 74, 0.8);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .summary-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .summary-card {
+      background: radial-gradient(circle at 0 0, rgba(0, 255, 255, 0.12) 0, transparent 45%), #020b1c;
+      border-radius: 14px;
+      padding: 8px 10px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .summary-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .summary-value {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #e9f4ff;
+    }
+
+    .summary-sub {
+      margin-top: 2px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      margin-top: 4px;
+      background: rgba(0, 255, 255, 0.14);
+      color: #e0f7ff;
+      border: 1px solid rgba(0, 255, 255, 0.55);
+    }
+
+    .status-chip-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00e0ff;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
+    }
+
+    .status-chip.green {
+      background: rgba(178, 255, 89, 0.08);
+      color: #c5ff8b;
+      border-color: rgba(139, 195, 74, 0.8);
+    }
+
+    .status-chip.green .status-chip-dot {
+      background: #76ff03;
+    }
+
+    .status-chip.orange {
+      background: rgba(255, 224, 130, 0.1);
+      color: #ffe082;
+      border-color: rgba(255, 183, 77, 0.8);
+    }
+
+    .status-chip.orange .status-chip-dot {
+      background: #ffb300;
+    }
+
+    .status-chip.red {
+      background: rgba(244, 67, 54, 0.12);
+      color: #ffab91;
+      border-color: rgba(244, 67, 54, 0.9);
+    }
+
+    .status-chip.red .status-chip-dot {
+      background: #ff1744;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .chart-card {
+      background: radial-gradient(circle at 0 0, rgba(0, 255, 255, 0.06) 0, transparent 50%), #020b1c;
+      border-radius: 14px;
+      padding: 8px 10px;
+      border: 1px dashed rgba(0, 255, 255, 0.35);
+    }
+
+    .chart-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #e0f7ff;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chart-title span.info {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+   .chart-container {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
+
+    @media (min-width: 1200px) and (min-height: 800px) {
+  .chart-container {
+    height: 320px;                /* perbesar chart di layar besar */
+  }
+}
+
+    .insight-panel {
+      margin-top: 10px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: rgba(33, 94, 63, 0.85);
+      border: 1px solid rgba(139, 195, 74, 0.85);
+      font-size: 0.78rem;
+      color: #e8f5e9;
+    }
+
+    .insight-panel h3 {
+      margin: 0 0 4px;
+      font-size: 0.85rem;
+    }
+
+    .insight-panel ul {
+      margin: 0 0 4px 16px;
+      padding: 0;
+    }
+
+    .insight-panel li {
+      margin-bottom: 2px;
+    }
+
+    .insight-risk {
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 980px) {
+     .bottom-grid > .card {
+  height: 100%;
+}
+
+    }
+
+  .report-area {
+  min-height: 220px;
+}
+
+    .report-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .selectors-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .selectors-row > div {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .selectors-row select {
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      background: rgba(2, 20, 40, 0.9);
+      color: #e6f4ff;
+      padding: 3px 8px;
+      font-size: 0.8rem;
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(13, minmax(0, 1fr));
+      font-size: 0.7rem;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
+
+    .heatmap-cell,
+    .heatmap-header {
+      padding: 4px;
+      text-align: center;
+      border-bottom: 1px solid rgba(15, 76, 129, 0.7);
+      border-right: 1px solid rgba(15, 76, 129, 0.7);
+      white-space: nowrap;
+    }
+
+    .heatmap-header {
+      background: rgba(0, 25, 48, 0.9);
+      font-weight: 600;
+      color: #e6f4ff;
+    }
+
+    .heatmap-cell.service {
+      text-align: left;
+      background: rgba(2, 20, 40, 0.95);
+      font-weight: 600;
+    }
+
+    .heatmap-cell.value {
+      background: rgba(2, 20, 40, 0.85);
+      color: #e6f4ff;
+    }
+
+    .heatmap-cell.value.low {
+      background: rgba(183, 28, 28, 0.65);
+    }
+
+    .heatmap-cell.value.mid {
+      background: rgba(255, 193, 7, 0.6);
+    }
+
+    .heatmap-cell.value.high {
+      background: rgba(56, 142, 60, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-group-main">
+  <img src="logo-bbt.png" alt="Logo Balai Besar Tekstil" class="logo-bbt" />
+  <img src="logo-issc.png" alt="Logo Industrial Services & Solution Center" class="logo-issc" />
+</div>
+...
+<img src="logo-blu-speed.png" alt="Logo BLU Speed" class="logo-blu" />
+
+        <div class="header-text">
+          <h1>DASHBOARD PENERIMAAN 14 LAYANAN</h1>
+          <p>Balai Besar Tekstil &mdash; Monitoring target, realisasi, pembanding, dan proyeksi multi-tahun.</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="selector-group">
+          <label for="yearSelect">Tahun</label>
+          <select id="yearSelect"></select>
+        </div>
+        <div class="selector-group" id="periodTypeWrapper">
+          <label for="periodTypeSelect">Mode</label>
+          <select id="periodTypeSelect">
+            <option value="bulan">Per Bulan</option>
+            <option value="triwulan">Per Triwulan</option>
+            <option value="semester">Per Semester</option>
+            <option value="tahun">Tahunan</option>
+          </select>
+        </div>
+        <img src="Logo BLU Speed.png" alt="Logo BLU Speed" class="logo-blu" />
+      </div>
+    </header>
+
+    <main>
+      <section class="layout-main">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>Input Target &amp; Capaian per Layanan</h2>
+              <span id="tableSubtitle"></span>
+            </div>
+          </div>
+
+          <div class="selectors-row">
+            <div id="monthWrapper">
+              <span>Bulan:</span>
+              <select id="monthSelect"></select>
+            </div>
+            <div id="quarterWrapper" style="display:none;">
+              <span>Triwulan:</span>
+              <select id="quarterSelect">
+                <option value="q1">Triwulan 1 (Jan–Mar)</option>
+                <option value="q2">Triwulan 2 (Apr–Jun)</option>
+                <option value="q3">Triwulan 3 (Jul–Sep)</option>
+                <option value="q4">Triwulan 4 (Okt–Des)</option>
+              </select>
+            </div>
+            <div id="semesterWrapper" style="display:none;">
+              <span>Semester:</span>
+              <select id="semesterSelect">
+                <option value="s1">Semester 1 (Jan–Jun)</option>
+                <option value="s2">Semester 2 (Jul–Des)</option>
+              </select>
+            </div>
+            <div>
+              <span id="modeLabel" style="color:var(--text-muted);font-size:0.78rem;"></span>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn btn-primary" id="btnSave">
+              <span class="btn-icon">💾</span> Simpan Data
+            </button>
+            <button class="btn" id="btnExport">
+              <span class="btn-icon">📤</span> Export JSON
+            </button>
+            <button class="btn" id="btnExportExcel">
+              <span class="btn-icon">📊</span> Export Excel
+            </button>
+            <button class="btn" id="btnImportExcel">
+              <span class="btn-icon">📥</span> Import Excel (Manual)
+            </button>
+            <button class="btn btn-danger" id="btnResetYear">
+              <span class="btn-icon">🧹</span> Reset Tahun Ini
+            </button>
+          </div>
+
+          <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;" />
+
+          <div class="table-wrapper">
+            <table>
+              <thead id="tableHead"></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+          <div class="helper-text">
+            💡 Angka dalam Rupiah tanpa titik/koma. Mode <b>Per Bulan</b> memungkinkan edit langsung; Mode lainnya menampilkan agregat (read-only).
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>Ringkasan &amp; Indikator Kinerja</h2>
+              <span id="summaryPeriodLabel"></span>
+            </div>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-label">Total Target</div>
+              <div class="summary-value" id="sumTarget">Rp0</div>
+              <div class="summary-sub" id="sumTargetSub"></div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">Total Capaian</div>
+              <div class="summary-value" id="sumCapaian">Rp0</div>
+              <div class="summary-sub" id="sumCapaianSub"></div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">% Capaian &amp; Gap</div>
+              <div class="summary-value" id="percentTotal">0%</div>
+              <div class="summary-sub" id="gapText"></div>
+              <div class="status-chip" id="statusChip">
+                <span class="status-chip-dot"></span>
+                <span id="statusChipText">Belum tercapai</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">Pertumbuhan YoY</div>
+              <div class="summary-value" id="yoyText">-</div>
+              <div class="summary-sub" id="yoySub"></div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">Proyeksi Akhir Tahun</div>
+              <div class="summary-value" id="forecastYearEnd">Rp0</div>
+              <div class="summary-sub" id="forecastYearEndSub"></div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">Proyeksi Tahun Berikutnya</div>
+              <div class="summary-value" id="forecastNextYear">Rp0</div>
+              <div class="summary-sub" id="forecastNextYearSub"></div>
+            </div>
+          </div>
+
+          <div class="chart-grid">
+            <div class="chart-card">
+              <div class="chart-title">
+                <span>Target vs Capaian per Layanan</span>
+                <span class="info" id="chart1Info"></span>
+              </div>
+              <div class="chart-container">
+                <canvas id="chartCurrent"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">
+                <span>Tren Bulanan Total Penerimaan</span>
+                <span class="info" id="chartTrendInfo"></span>
+              </div>
+              <div class="chart-container">
+                <canvas id="chartTrend"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">
+                <span>Perbandingan YoY Bulanan</span>
+                <span class="info" id="chartYoYInfo"></span>
+              </div>
+              <div class="chart-container">
+                <canvas id="chartYoY"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="insight-panel" id="insightPanel">
+            <h3>Ringkasan untuk Pimpinan</h3>
+            <ul id="insightList"></ul>
+            <div class="insight-risk" id="insightRisk"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="bottom-grid">
+        <section class="card">
+          <div class="card-header">
+            <h2>Heatmap &amp; Kontribusi Layanan</h2>
+            <span>Gambaran distribusi capaian 12 bulan × 14 layanan.</span>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">
+              <span>Kontribusi Capaian per Layanan</span>
+              <span class="info" id="chartShareInfo"></span>
+            </div>
+            <div class="chart-container">
+              <canvas id="chartShare"></canvas>
+            </div>
+          </div>
+          <div class="chart-card" style="margin-top:8px;">
+            <div class="chart-title">
+              <span>Forecast Total Penerimaan Tahun Berikutnya</span>
+              <span class="info" id="chartForecastInfo"></span>
+            </div>
+            <div class="chart-container">
+              <canvas id="chartForecast"></canvas>
+            </div>
+          </div>
+          <div class="chart-card" style="margin-top:8px;">
+            <div class="chart-title">
+              <span>Heatmap Capaian (14 Layanan × 12 Bulan)</span>
+              <span class="info">Semakin hijau berarti persen capaian makin tinggi.</span>
+            </div>
+            <div id="heatmapGrid" class="heatmap-grid"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>Review &amp; Laporan Otomatis</h2>
+              <span>Laporan naratif singkat dalam Bahasa Indonesia untuk pimpinan.</span>
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-primary" id="btnGenerateReport">
+              <span class="btn-icon">✨</span> Generate Laporan
+            </button>
+          </div>
+          <div class="report-area" id="reportText">
+            Tekan tombol "Generate Laporan" untuk membuat ringkasan otomatis berdasarkan data periode yang dipilih.
+          </div>
+          <div class="report-toolbar">
+            <button class="btn" id="btnCopyReport">
+              <span class="btn-icon">📋</span> Salin Teks
+            </button>
+          </div>
+          <div class="helper-text">
+            Laporan ini dapat langsung disalin ke dokumen Word, bahan paparan, atau laporan kinerja BLU.
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    // =========================
+    // KONFIGURASI & DATA MODEL
+    // =========================
+
+    const SERVICES = [
+      { key: "pengujian",   name: "Pengujian Tekstil & Mainan Anak", short: "Pengujian" },
+      { key: "lingkungan",  name: "Pengujian Kimia Lingkungan",      short: "Lingkungan" },
+      { key: "kalibrasi",   name: "Kalibrasi",                       short: "Kalibrasi" },
+      { key: "masker",      name: "Pengujian Masker",                short: "Masker" },
+      { key: "sertifikasi", name: "Sertifikasi",                     short: "Sertifikasi" },
+      { key: "inspeksi",    name: "Inspeksi Teknis",                 short: "Inspeksi" },
+      { key: "konsultansi", name: "Konsultansi",                     short: "Konsultansi" },
+      { key: "bimteks",     name: "Bimbingan Teknis",                short: "Bimtek" },
+      { key: "opti",        name: "Optimalisasi Teknologi",          short: "Opt. Tek." },
+      { key: "uji_profi",   name: "Uji Profisiensi",                 short: "Uji Profi." },
+      { key: "verifikasi",  name: "Verifikasi",                      short: "Verifikasi" },
+      { key: "lph",         name: "LPH",                             short: "LPH" },
+      { key: "aset",        name: "Pemanfaatan Aset",                short: "Aset" },
+      { key: "bagi_hasil",  name: "Bagi Hasil Kerja Sama",           short: "Bagi Hasil" }
+    ];
+
+    const MONTHS = [
+      { key: "jan", label: "Januari",   short: "Jan" },
+      { key: "feb", label: "Februari",  short: "Feb" },
+      { key: "mar", label: "Maret",     short: "Mar" },
+      { key: "apr", label: "April",     short: "Apr" },
+      { key: "mei", label: "Mei",       short: "Mei" },
+      { key: "jun", label: "Juni",      short: "Jun" },
+      { key: "jul", label: "Juli",      short: "Jul" },
+      { key: "agu", label: "Agustus",   short: "Agu" },
+      { key: "sep", label: "September", short: "Sep" },
+      { key: "okt", label: "Oktober",   short: "Okt" },
+      { key: "nov", label: "November",  short: "Nov" },
+      { key: "des", label: "Desember",  short: "Des" }
+    ];
+
+    const STORAGE_KEY = "monitoringPenerimaan14Layanan_monthly";
+
+    // Rentang tahun untuk auto-import file Excel default (data-penerimaan-YYYY.xlsx)
+    // Misalnya: 5 tahun ke belakang dan 5 tahun ke depan dari tahun berjalan
+    const AUTO_IMPORT_MIN_OFFSET = 5;
+    const AUTO_IMPORT_MAX_OFFSET = 5;
+
+
+
+    // DOM
+    const yearSelect        = document.getElementById("yearSelect");
+    const periodTypeSelect  = document.getElementById("periodTypeSelect");
+    const monthWrapper      = document.getElementById("monthWrapper");
+    const quarterWrapper    = document.getElementById("quarterWrapper");
+    const semesterWrapper   = document.getElementById("semesterWrapper");
+    const monthSelect       = document.getElementById("monthSelect");
+    const quarterSelect     = document.getElementById("quarterSelect");
+    const semesterSelect    = document.getElementById("semesterSelect");
+    const modeLabel         = document.getElementById("modeLabel");
+
+    const tableHead         = document.getElementById("tableHead");
+    const tableBody         = document.getElementById("tableBody");
+    const tableSubtitle     = document.getElementById("tableSubtitle");
+
+    const sumTargetEl       = document.getElementById("sumTarget");
+    const sumCapaianEl      = document.getElementById("sumCapaian");
+    const sumTargetSubEl    = document.getElementById("sumTargetSub");
+    const sumCapaianSubEl   = document.getElementById("sumCapaianSub");
+    const percentTotalEl    = document.getElementById("percentTotal");
+    const gapTextEl         = document.getElementById("gapText");
+    const statusChip        = document.getElementById("statusChip");
+    const statusChipText    = document.getElementById("statusChipText");
+    const summaryPeriodLabel= document.getElementById("summaryPeriodLabel");
+    const yoyTextEl         = document.getElementById("yoyText");
+    const yoySubEl          = document.getElementById("yoySub");
+    const forecastYearEndEl = document.getElementById("forecastYearEnd");
+    const forecastYearEndSubEl = document.getElementById("forecastYearEndSub");
+    const forecastNextYearEl   = document.getElementById("forecastNextYear");
+    const forecastNextYearSubEl= document.getElementById("forecastNextYearSub");
+
+    const chart1Info        = document.getElementById("chart1Info");
+    const chartTrendInfo    = document.getElementById("chartTrendInfo");
+    const chartYoYInfo      = document.getElementById("chartYoYInfo");
+    const chartShareInfo    = document.getElementById("chartShareInfo");
+    const chartForecastInfo = document.getElementById("chartForecastInfo");
+
+    const insightList       = document.getElementById("insightList");
+    const insightRisk       = document.getElementById("insightRisk");
+    const heatmapGrid       = document.getElementById("heatmapGrid");
+
+    const btnSave           = document.getElementById("btnSave");
+    const btnResetYear      = document.getElementById("btnResetYear");
+    const btnExport         = document.getElementById("btnExport");
+    const btnGenerateReport = document.getElementById("btnGenerateReport");
+    const btnCopyReport     = document.getElementById("btnCopyReport");
+    const reportTextEl      = document.getElementById("reportText");
+    const toastEl           = document.getElementById("toast");
+
+    let dataStore = {};
+    let charts = {};
+
+    // =============
+    // UTILITAS UMUM
+    // =============
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add("show");
+      setTimeout(() => toastEl.classList.remove("show"), 2000);
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+      try {
+        const parsed = JSON.parse(raw);
+        return typeof parsed === "object" && parsed !== null ? parsed : {};
+      } catch (e) {
+        console.warn("Gagal membaca localStorage:", e);
+        return {};
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataStore));
+    }
+
+    function ensureYear(year) {
+      if (!dataStore[year]) {
+        dataStore[year] = {};
+      }
+      SERVICES.forEach((svc) => {
+        if (!dataStore[year][svc.key]) {
+          dataStore[year][svc.key] = {
+            target_bulan: new Array(12).fill(0),
+            capaian_bulan: new Array(12).fill(0)
+          };
+        } else {
+          // pastikan array panjang 12
+          if (!Array.isArray(dataStore[year][svc.key].target_bulan))
+            dataStore[year][svc.key].target_bulan = new Array(12).fill(0);
+          if (!Array.isArray(dataStore[year][svc.key].capaian_bulan))
+            dataStore[year][svc.key].capaian_bulan = new Array(12).fill(0);
+          if (dataStore[year][svc.key].target_bulan.length < 12)
+            dataStore[year][svc.key].target_bulan = [
+              ...dataStore[year][svc.key].target_bulan,
+              ...new Array(12 - dataStore[year][svc.key].target_bulan.length).fill(0)
+            ];
+          if (dataStore[year][svc.key].capaian_bulan.length < 12)
+            dataStore[year][svc.key].capaian_bulan = [
+              ...dataStore[year][svc.key].capaian_bulan,
+              ...new Array(12 - dataStore[year][svc.key].capaian_bulan.length).fill(0)
+            ];
+        }
+      });
+    }
+
+    function buildYearOptions() {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+
+      // Gunakan offset yang sama dengan mekanisme auto-import Excel
+      const startYear = currentYear - AUTO_IMPORT_MIN_OFFSET;
+      const endYear   = currentYear + AUTO_IMPORT_MAX_OFFSET;
+
+      yearSelect.innerHTML = "";
+      for (let y = startYear; y <= endYear; y++) {
+        const opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        yearSelect.appendChild(opt);
+      }
+      yearSelect.value = currentYear;
+    }
+
+    function buildMonthOptions() {
+      monthSelect.innerHTML = "";
+      MONTHS.forEach((m, idx) => {
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = m.label;
+        monthSelect.appendChild(opt);
+      });
+      monthSelect.value = "0"; // Januari
+    }
+
+    function getSelectedYear() {
+      return parseInt(yearSelect.value, 10);
+    }
+
+    function getPeriodSelection() {
+      const type = periodTypeSelect.value; // "bulan","triwulan","semester","tahun"
+      let value = null;
+      if (type === "bulan") value = parseInt(monthSelect.value, 10);
+      if (type === "triwulan") value = quarterSelect.value;
+      if (type === "semester") value = semesterSelect.value;
+      // "tahun" value tetap null
+      return { type, value };
+    }
+
+    function periodLabel(type, value, year) {
+      if (type === "bulan") {
+        return `${MONTHS[value].label} ${year}`;
+      }
+      if (type === "triwulan") {
+        const map = {
+          q1: "Triwulan 1 (Jan–Mar)",
+          q2: "Triwulan 2 (Apr–Jun)",
+          q3: "Triwulan 3 (Jul–Sep)",
+          q4: "Triwulan 4 (Okt–Des)"
+        };
+        return `${map[value] || ""} ${year}`;
+      }
+      if (type === "semester") {
+        const map = {
+          s1: "Semester 1 (Jan–Jun)",
+          s2: "Semester 2 (Jul–Des)"
+        };
+        return `${map[value] || ""} ${year}`;
+      }
+      return `Tahun ${year} (akumulasi 12 bulan)`;
+    }
+
+    function formatRupiah(value) {
+      const num = Number(value) || 0;
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+      }).format(num);
+    }
+
+    function formatPercent(value) {
+      return `${value.toFixed(1)}%`;
+    }
+
+    // Hitung target & capaian untuk satu layanan pada periode tertentu
+    function getServicePeriodData(year, periodType, periodValue, serviceKey) {
+      ensureYear(year);
+      const svcData = dataStore[year][serviceKey];
+      const tArr = svcData.target_bulan || new Array(12).fill(0);
+      const cArr = svcData.capaian_bulan || new Array(12).fill(0);
+
+      let idxs = [];
+      if (periodType === "bulan") {
+        idxs = [periodValue];
+      } else if (periodType === "triwulan") {
+        if (periodValue === "q1") idxs = [0, 1, 2];
+        if (periodValue === "q2") idxs = [3, 4, 5];
+        if (periodValue === "q3") idxs = [6, 7, 8];
+        if (periodValue === "q4") idxs = [9, 10, 11];
+      } else if (periodType === "semester") {
+        if (periodValue === "s1") idxs = [0, 1, 2, 3, 4, 5];
+        if (periodValue === "s2") idxs = [6, 7, 8, 9, 10, 11];
+      } else {
+        idxs = [...Array(12).keys()];
+      }
+
+      let target = 0;
+      let capaian = 0;
+      idxs.forEach(i => {
+        target += Number(tArr[i] || 0);
+        capaian += Number(cArr[i] || 0);
+      });
+      return { target, capaian };
+    }
+
+    function getTotalForPeriod(year, periodType, periodValue) {
+      ensureYear(year);
+      let totalTarget = 0;
+      let totalCapaian = 0;
+      SERVICES.forEach((svc) => {
+        const { target, capaian } = getServicePeriodData(year, periodType, periodValue, svc.key);
+        totalTarget += target;
+        totalCapaian += capaian;
+      });
+      return { totalTarget, totalCapaian };
+    }
+
+    // =====================
+    // TABEL INPUT / AGREGAT
+    // =====================
+
+    function buildTable() {
+      const year = getSelectedYear();
+      const { type, value } = getPeriodSelection();
+      ensureYear(year);
+
+      tableHead.innerHTML = "";
+      tableBody.innerHTML = "";
+
+      const headRow = document.createElement("tr");
+      if (type === "bulan") {
+        headRow.innerHTML = `
+          <th>No</th>
+          <th>Layanan</th>
+          <th>Target Bulan (Rp)</th>
+          <th>Capaian Bulan (Rp)</th>
+          <th>% Capaian Bulan</th>
+          <th>Selisih (Rp)</th>
+        `;
+        tableSubtitle.textContent = `Input target dan capaian untuk ${MONTHS[value].label} Tahun ${year}.`;
+        modeLabel.textContent = "Per Bulan (editable)";
+      } else {
+        headRow.innerHTML = `
+          <th>No</th>
+          <th>Layanan</th>
+          <th>Target Periode (Rp)</th>
+          <th>Capaian Periode (Rp)</th>
+          <th>% Capaian</th>
+          <th>Selisih (Rp)</th>
+        `;
+        tableSubtitle.textContent = `Tampilan agregat untuk ${periodLabel(type, value, year)}.`;
+        modeLabel.textContent = "Agregat (Triwulan/Semester/Tahun) - read only";
+      }
+      tableHead.appendChild(headRow);
+
+      SERVICES.forEach((svc, index) => {
+        const row = document.createElement("tr");
+        row.dataset.serviceKey = svc.key;
+
+        const cellNo = document.createElement("td");
+        cellNo.textContent = index + 1;
+
+        const cellName = document.createElement("td");
+        const spanName = document.createElement("span");
+        spanName.className = "service-name";
+        spanName.textContent = svc.name;
+        cellName.appendChild(spanName);
+
+        const cellTarget = document.createElement("td");
+        const cellCapaian = document.createElement("td");
+        const cellPercent = document.createElement("td");
+        cellPercent.className = "cell-percent";
+        const cellSelisih = document.createElement("td");
+        cellSelisih.className = "cell-selisih";
+
+        if (type === "bulan") {
+          const svcData = dataStore[year][svc.key];
+          const tArr = svcData.target_bulan || new Array(12).fill(0);
+          const cArr = svcData.capaian_bulan || new Array(12).fill(0);
+          const tVal = tArr[value] || 0;
+          const cVal = cArr[value] || 0;
+
+          const inputT = document.createElement("input");
+          inputT.type = "number";
+          inputT.min = "0";
+          inputT.step = "1000";
+          inputT.value = tVal || "";
+          inputT.dataset.serviceKey = svc.key;
+          inputT.dataset.monthIndex = String(value);
+          inputT.dataset.fieldType = "target";
+          inputT.addEventListener("input", onNumberInputChange);
+          cellTarget.appendChild(inputT);
+
+          const inputC = document.createElement("input");
+          inputC.type = "number";
+          inputC.min = "0";
+          inputC.step = "1000";
+          inputC.value = cVal || "";
+          inputC.dataset.serviceKey = svc.key;
+          inputC.dataset.monthIndex = String(value);
+          inputC.dataset.fieldType = "capaian";
+          inputC.addEventListener("input", onNumberInputChange);
+          cellCapaian.appendChild(inputC);
+        } else {
+          const { target, capaian } = getServicePeriodData(year, type, value, svc.key);
+          cellTarget.textContent = formatRupiah(target);
+          cellCapaian.textContent = formatRupiah(capaian);
+        }
+
+        row.appendChild(cellNo);
+        row.appendChild(cellName);
+        row.appendChild(cellTarget);
+        row.appendChild(cellCapaian);
+        row.appendChild(cellPercent);
+        row.appendChild(cellSelisih);
+        tableBody.appendChild(row);
+      });
+
+      recalculateEverything();
+    }
+
+    function onNumberInputChange(event) {
+      const input      = event.target;
+      const year       = getSelectedYear();
+      const svcKey     = input.dataset.serviceKey;
+      const monthIndex = parseInt(input.dataset.monthIndex, 10);
+      const fieldType  = input.dataset.fieldType; // "target" atau "capaian"
+      const value      = parseFloat(input.value);
+      const safeValue  = isNaN(value) ? 0 : value;
+
+      ensureYear(year);
+      const svcData = dataStore[year][svcKey];
+
+      if (fieldType === "target") {
+        svcData.target_bulan[monthIndex] = safeValue;
+      } else {
+        svcData.capaian_bulan[monthIndex] = safeValue;
+      }
+
+      recalculateEverything();
+      saveData();
+    }
+
+    function recalculateTableRows() {
+      const year = getSelectedYear();
+      const { type, value } = getPeriodSelection();
+      ensureYear(year);
+
+      const rows = Array.from(tableBody.querySelectorAll("tr"));
+      rows.forEach((row) => {
+        const key = row.dataset.serviceKey;
+        const percentTd = row.querySelector(".cell-percent");
+        const selisihTd = row.querySelector(".cell-selisih");
+
+        const { target, capaian } = getServicePeriodData(year, type, value, key);
+        let percent = 0;
+        if (target > 0) {
+          percent = (capaian / target) * 100;
+        }
+        const selisih = capaian - target;
+
+        percentTd.innerHTML = "";
+        const badge = document.createElement("span");
+        badge.className = "badge-percent";
+        if (percent < 90 && target > 0) {
+          badge.classList.add("low");
+        } else if (percent >= 90 && percent < 100 && target > 0) {
+          badge.classList.add("mid");
+        } else if (percent >= 100 && target > 0) {
+          badge.classList.add("high");
+        }
+        badge.textContent = target > 0 ? formatPercent(percent) : "-";
+        percentTd.appendChild(badge);
+
+        selisihTd.textContent = target > 0 || capaian > 0 ? formatRupiah(selisih) : "-";
+
+        if (percent < 100 && target > 0) {
+          row.classList.add("below-target");
+        } else {
+          row.classList.remove("below-target");
+        }
+
+        // untuk mode agregat, update tampilan target/capaian bila data berubah
+        const cells = row.querySelectorAll("td");
+        if (type !== "bulan") {
+          const targetCell = cells[2];
+          const capaianCell = cells[3];
+          targetCell.textContent = formatRupiah(target);
+          capaianCell.textContent = formatRupiah(capaian);
+        }
+      });
+    }
+
+    // ============
+    // RINGKASAN KPI
+    // ============
+
+    function recalculateSummary() {
+      const year = getSelectedYear();
+      const { type, value } = getPeriodSelection();
+      ensureYear(year);
+
+      const { totalTarget, totalCapaian } = getTotalForPeriod(year, type, value);
+      sumTargetEl.textContent = formatRupiah(totalTarget);
+      sumCapaianEl.textContent = formatRupiah(totalCapaian);
+
+      let subTarget = "";
+      let subCap = "";
+      if (type === "bulan") {
+        subTarget = `Total target bulan ${MONTHS[value].label} tahun ${year}.`;
+        subCap    = `Total realisasi bulan ${MONTHS[value].label} tahun ${year}.`;
+      } else {
+        subTarget = `Total target untuk ${periodLabel(type, value, year)}.`;
+        subCap    = `Total realisasi untuk ${periodLabel(type, value, year)}.`;
+      }
+      sumTargetSubEl.textContent = subTarget;
+      sumCapaianSubEl.textContent = subCap;
+
+      let percent = 0;
+      if (totalTarget > 0) {
+        percent = (totalCapaian / totalTarget) * 100;
+      }
+      percentTotalEl.textContent = totalTarget > 0 ? formatPercent(percent) : "-";
+      const gap = totalCapaian - totalTarget;
+      gapTextEl.textContent =
+        totalTarget > 0 || totalCapaian > 0
+          ? `Gap target: ${formatRupiah(gap)} (${gap >= 0 ? "di atas target" : "di bawah target"})`
+          : "Gap target: -";
+
+      statusChip.classList.remove("green", "orange", "red");
+      if (percent >= 100 && totalTarget > 0) {
+        statusChip.classList.add("green");
+        statusChipText.textContent = "Target tercapai / terlampaui";
+      } else if (percent >= 90 && totalTarget > 0) {
+        statusChip.classList.add("orange");
+        statusChipText.textContent = "Mendekati target (≥90%)";
+      } else if (totalTarget > 0) {
+        statusChip.classList.add("red");
+        statusChipText.textContent = "Belum tercapai";
+      } else {
+        statusChipText.textContent = "Belum ada target";
+      }
+
+      // YoY
+      const prevYear = year - 1;
+      let yoyText = "-";
+      let yoySub = "Belum ada data pembanding tahun sebelumnya.";
+      if (dataStore[prevYear]) {
+        const { totalCapaian: prevCapaian } = getTotalForPeriod(prevYear, type, value);
+        if (prevCapaian > 0 && totalCapaian > 0) {
+          const growth = ((totalCapaian - prevCapaian) / prevCapaian) * 100;
+          yoyText = formatPercent(growth);
+          if (growth > 0) {
+            yoySub = `Naik ${growth.toFixed(1)}% dibanding periode yang sama tahun ${prevYear}.`;
+          } else if (growth < 0) {
+            yoySub = `Turun ${Math.abs(growth).toFixed(1)}% dibanding periode yang sama tahun ${prevYear}.`;
+          } else {
+            yoySub = `Tidak berubah dibanding periode yang sama tahun ${prevYear}.`;
+          }
+        } else if (prevCapaian === 0 && totalCapaian > 0) {
+          yoyText = "n/a";
+          yoySub = `Periode ini memiliki realisasi, sementara tahun ${prevYear} belum ada realisasi pada periode yang sama.`;
+        }
+      }
+      yoyTextEl.textContent = yoyText;
+      yoySubEl.textContent = yoySub;
+
+      // Forecast akhir tahun (berbasis agregat bulanan)
+      let forecastEndYear = 0;
+      if (type === "tahun") {
+        forecastEndYear = totalCapaian;
+        forecastYearEndSubEl.textContent =
+          "Proyeksi akhir tahun sama dengan realisasi saat ini (akumulasi 12 bulan).";
+      } else {
+        // gunakan data bulanan sampai bulan terakhir yang memiliki data
+        ensureYear(year);
+        const monthTotals = new Array(12).fill(0);
+        SERVICES.forEach((svc) => {
+          const svcData = dataStore[year][svc.key];
+          const cArr = svcData.capaian_bulan || new Array(12).fill(0);
+          cArr.forEach((val, idx) => {
+            monthTotals[idx] += Number(val || 0);
+          });
+        });
+
+        let lastMonthWithData = -1;
+        for (let i = 11; i >= 0; i--) {
+          if (monthTotals[i] > 0) {
+            lastMonthWithData = i;
+            break;
+          }
+        }
+        if (lastMonthWithData === -1) {
+          forecastEndYear = 0;
+          forecastYearEndSubEl.textContent = "Belum cukup data untuk membentuk proyeksi akhir tahun.";
+        } else {
+          const totalSoFar = monthTotals.slice(0, lastMonthWithData + 1).reduce((a, b) => a + b, 0);
+          const avgPerMonth = totalSoFar / (lastMonthWithData + 1);
+          forecastEndYear = avgPerMonth * 12;
+          forecastYearEndSubEl.textContent =
+            `Proyeksi akhir tahun menggunakan rata-rata bulanan hingga ${MONTHS[lastMonthWithData].label}.`;
+        }
+      }
+      forecastYearEndEl.textContent = formatRupiah(forecastEndYear);
+
+      // Forecast tahun berikutnya
+      const prevYearTotal = dataStore[prevYear] ? getTotalForPeriod(prevYear, "tahun", null) : null;
+      let forecastNext = 0;
+      let forecastNextSub = "";
+      const { totalCapaian: currentFullYearCapaian } = getTotalForPeriod(year, "tahun", null);
+
+      if (prevYearTotal && prevYearTotal.totalCapaian > 0 && currentFullYearCapaian > 0) {
+        const growthRate = (currentFullYearCapaian - prevYearTotal.totalCapaian) / prevYearTotal.totalCapaian;
+        forecastNext = currentFullYearCapaian * (1 + growthRate);
+        forecastNextSub = `Perkiraan berdasarkan tren pertumbuhan ${((growthRate || 0) * 100).toFixed(
+          1
+        )}% dari total capaian tahunan tahun sebelumnya.`;
+      } else if (currentFullYearCapaian > 0) {
+        const defaultGrowth = 0.05;
+        forecastNext = currentFullYearCapaian * (1 + defaultGrowth);
+        forecastNextSub = "Perkiraan menggunakan asumsi pertumbuhan konservatif 5% dari total capaian tahun berjalan.";
+      } else {
+        forecastNext = 0;
+        forecastNextSub = "Belum cukup data untuk membentuk proyeksi tahun berikutnya.";
+      }
+      forecastNextYearEl.textContent = formatRupiah(forecastNext);
+      forecastNextYearSubEl.textContent = forecastNextSub;
+
+      summaryPeriodLabel.textContent = `Periode: ${periodLabel(type, value, year)}.`;
+    }
+
+    // ============
+    // CHARTS
+    // ============
+
+    function rebuildCharts() {
+      Object.values(charts).forEach((ch) => {
+        if (ch && typeof ch.destroy === "function") ch.destroy();
+      });
+      charts = {};
+
+      const year = getSelectedYear();
+      const { type, value } = getPeriodSelection();
+      ensureYear(year);
+
+      buildChartCurrent(year, type, value);
+      buildChartTrend(year);
+      buildChartYoY(year);
+      buildChartShare(year, type, value);
+      buildChartForecast(year, type, value);
+      buildHeatmap(year);
+    }
+
+    function buildChartCurrent(year, type, value) {
+      const ctx = document.getElementById("chartCurrent").getContext("2d");
+      const labels = SERVICES.map((s) => s.short);
+      const targets = [];
+      const capaians = [];
+      SERVICES.forEach((svc) => {
+        const { target, capaian } = getServicePeriodData(year, type, value, svc.key);
+        targets.push(target);
+        capaians.push(capaian);
+      });
+
+      charts.chartCurrent = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Target",
+              data: targets,
+              backgroundColor: "rgba(0, 166, 199, 0.8)"
+            },
+            {
+              label: "Capaian",
+              data: capaians,
+              backgroundColor: "rgba(249, 168, 38, 0.9)"
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                color: "#e6f4ff",
+                font: { size: 10 }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  const label = ctx.dataset.label || "";
+                  const value = ctx.raw || 0;
+                  return `${label}: ${formatRupiah(value)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                font: { size: 10 },
+                color: "#9fb3d1"
+              },
+              grid: {
+                color: "rgba(15,76,129,0.4)"
+              }
+            },
+            y: {
+              ticks: {
+                callback: function (value) {
+                  return value.toLocaleString("id-ID");
+                },
+                font: { size: 9 },
+                color: "#9fb3d1"
+              },
+              grid: {
+                color: "rgba(15,76,129,0.4)"
+              }
+            }
+          }
+        }
+      });
+
+      chart1Info.textContent = periodLabel(type, value, year);
+    }
+
+    function buildChartTrend(year) {
+      const ctx = document.getElementById("chartTrend").getContext("2d");
+      ensureYear(year);
+
+      const monthlyTotals = new Array(12).fill(0);
+      const monthlyTargets = new Array(12).fill(0);
+
+      SERVICES.forEach((svc) => {
+        const svcData = dataStore[year][svc.key];
+        const tArr = svcData.target_bulan || new Array(12).fill(0);
+        const cArr = svcData.capaian_bulan || new Array(12).fill(0);
+        tArr.forEach((val, idx) => {
+          monthlyTargets[idx] += Number(val || 0);
+        });
+        cArr.forEach((val, idx) => {
+          monthlyTotals[idx] += Number(val || 0);
+        });
+      });
+
+      charts.chartTrend = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: MONTHS.map(m => m.short),
+          datasets: [
+            {
+              label: "Target Bulanan",
+              data: monthlyTargets,
+              borderColor: "rgba(0,166,199,1)",
+              backgroundColor: "rgba(0,166,199,0.15)",
+              tension: 0.25,
+              fill: true
+            },
+            {
+              label: "Capaian Bulanan",
+              data: monthlyTotals,
+              borderColor: "rgba(249,168,38,1)",
+              backgroundColor: "rgba(249,168,38,0.18)",
+              tension: 0.25,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: { color: "#e6f4ff", font: { size: 10 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  const label = ctx.dataset.label || "";
+                  const value = ctx.raw || 0;
+                  return `${label}: ${formatRupiah(value)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: "#9fb3d1", font: { size: 10 } },
+              grid: { color: "rgba(15,76,129,0.4)" }
+            },
+            y: {
+              ticks: {
+                callback: v => v.toLocaleString("id-ID"),
+                color: "#9fb3d1",
+                font: { size: 9 }
+              },
+              grid: { color: "rgba(15,76,129,0.4)" }
+            }
+          }
+        }
+      });
+
+      chartTrendInfo.textContent = `Tren bulanan Tahun ${year}.`;
+    }
+
+    function buildChartYoY(year) {
+      const ctx = document.getElementById("chartYoY").getContext("2d");
+      const prevYear = year - 1;
+      if (!dataStore[prevYear]) {
+        charts.chartYoY = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: ["Belum ada data tahun sebelumnya"],
+            datasets: [
+              {
+                label: "Capaian Tahun Berjalan",
+                data: [0],
+                borderColor: "rgba(0,166,199,0.8)"
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: false }
+            },
+            scales: {
+              x: { display: false },
+              y: { display: false }
+            }
+          }
+        });
+        chartYoYInfo.textContent = "Belum ada data tahun sebelumnya.";
+        return;
+      }
+
+      ensureYear(year);
+      ensureYear(prevYear);
+
+      const currentMonthly = new Array(12).fill(0);
+      const prevMonthly    = new Array(12).fill(0);
+
+      SERVICES.forEach((svc) => {
+        const svcCurr = dataStore[year][svc.key];
+        const svcPrev = dataStore[prevYear][svc.key];
+        (svcCurr.capaian_bulan || new Array(12).fill(0)).forEach((val, idx) => {
+          currentMonthly[idx] += Number(val || 0);
+        });
+        (svcPrev.capaian_bulan || new Array(12).fill(0)).forEach((val, idx) => {
+          prevMonthly[idx] += Number(val || 0);
+        });
+      });
+
+      charts.chartYoY = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: MONTHS.map(m => m.short),
+          datasets: [
+            {
+              label: `Capaian ${prevYear}`,
+              data: prevMonthly,
+              borderColor: "rgba(15,52,96,0.9)",
+              backgroundColor: "rgba(15,52,96,0.12)",
+              borderDash: [4, 4],
+              tension: 0.25,
+              fill: true
+            },
+            {
+              label: `Capaian ${year}`,
+              data: currentMonthly,
+              borderColor: "rgba(0,166,199,1)",
+              backgroundColor: "rgba(0,166,199,0.18)",
+              tension: 0.25,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: { color: "#e6f4ff", font: { size: 10 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  const label = ctx.dataset.label || "";
+                  const value = ctx.raw || 0;
+                  return `${label}: ${formatRupiah(value)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: "#9fb3d1", font: { size: 10 } },
+              grid: { color: "rgba(15,76,129,0.4)" }
+            },
+            y: {
+              ticks: {
+                callback: v => v.toLocaleString("id-ID"),
+                color: "#9fb3d1",
+                font: { size: 9 }
+              },
+              grid: { color: "rgba(15,76,129,0.4)" }
+            }
+          }
+        }
+      });
+
+      chartYoYInfo.textContent = `Perbandingan capaian bulanan Tahun ${year} vs ${prevYear}.`;
+    }
+
+    function buildChartShare(year, type, value) {
+      const ctx = document.getElementById("chartShare").getContext("2d");
+      ensureYear(year);
+
+      const labels = [];
+      const data = [];
+      SERVICES.forEach((svc) => {
+        const { capaian } = getServicePeriodData(year, type, value, svc.key);
+        if (capaian > 0) {
+          labels.push(svc.short);
+          data.push(capaian);
+        }
+      });
+
+      if (labels.length === 0) {
+        labels.push("Belum ada data");
+        data.push(1);
+      }
+
+      const colors = labels.map((_, idx) => {
+        const baseHue = 190;
+        const step = 360 / Math.max(labels.length, 6);
+        const hue = (baseHue + idx * step) % 360;
+        return `hsla(${hue}, 70%, 55%, 0.9)`;
+      });
+
+      charts.chartShare = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels,
+          datasets: [
+            {
+              data,
+              backgroundColor: colors
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "right",
+              labels: { boxWidth: 10, font: { size: 9 }, color: "#e6f4ff" }
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  const label = ctx.label || "";
+                  const value = ctx.raw || 0;
+                  const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                  const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                  return `${label}: ${formatRupiah(value)} (${percent}%)`;
+                }
+              }
+            }
+          },
+          cutout: "55%"
+        }
+      });
+
+      chartShareInfo.textContent = `Kontribusi relatif terhadap total capaian ${periodLabel(type, value, year)}.`;
+    }
+
+    function buildChartForecast(year, type, value) {
+      const ctx = document.getElementById("chartForecast").getContext("2d");
+      const { totalCapaian } = getTotalForPeriod(year, type, value);
+      const prevYear = year - 1;
+      const periodPrev = dataStore[prevYear] ? getTotalForPeriod(prevYear, type, value) : null;
+      const labels = [];
+      const data = [];
+      const bg = [];
+      const border = [];
+
+      if (periodPrev) {
+        labels.push(String(prevYear));
+        data.push(periodPrev.totalCapaian);
+        bg.push("rgba(15,52,96,0.6)");
+        border.push("rgba(15,52,96,0.95)");
+      }
+
+      labels.push(String(year));
+      data.push(totalCapaian);
+      bg.push("rgba(0,166,199,0.8)");
+      border.push("rgba(0,166,199,1)");
+
+      let forecastNext = 0;
+      if (periodPrev && periodPrev.totalCapaian > 0 && totalCapaian > 0) {
+        const growthRate = (totalCapaian - periodPrev.totalCapaian) / periodPrev.totalCapaian;
+        forecastNext = totalCapaian * (1 + growthRate);
+      } else if (totalCapaian > 0) {
+        forecastNext = totalCapaian * 1.05;
+      } else {
+        forecastNext = 0;
+      }
+
+      labels.push(String(year + 1) + " (Proyeksi)");
+      data.push(forecastNext);
+      bg.push("rgba(249,168,38,0.35)");
+      border.push("rgba(249,168,38,0.95)");
+
+      charts.chartForecast = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Total Capaian / Proyeksi",
+              data,
+              backgroundColor: bg,
+              borderColor: border,
+              borderWidth: 1,
+              borderSkipped: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  const value = ctx.raw || 0;
+                  return ` ${formatRupiah(value)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value) {
+                  return value.toLocaleString("id-ID");
+                },
+                font: { size: 9 },
+                color: "#9fb3d1"
+              },
+              grid: { color: "rgba(15,76,129,0.4)" }
+            },
+            x: {
+              ticks: { color: "#9fb3d1", font: { size: 10 } },
+              grid: { color: "rgba(15,76,129,0.4)" }
+            }
+          }
+        }
+      });
+
+      chartForecastInfo.textContent = `Menggunakan periode ${periodLabel(type, value, year)} untuk menghitung tren & proyeksi.`;
+    }
+
+    // ============
+    // HEATMAP
+    // ============
+
+    function buildHeatmap(year) {
+      ensureYear(year);
+      heatmapGrid.innerHTML = "";
+
+      const headers = ["Layanan", ...MONTHS.map(m => m.short)];
+      headers.forEach(h => {
+        const cell = document.createElement("div");
+        cell.className = "heatmap-header";
+        cell.textContent = h;
+        heatmapGrid.appendChild(cell);
+      });
+
+      SERVICES.forEach((svc) => {
+        const labelCell = document.createElement("div");
+        labelCell.className = "heatmap-cell service";
+        labelCell.textContent = svc.short;
+        heatmapGrid.appendChild(labelCell);
+
+        const svcData = dataStore[year][svc.key];
+        const tArr = svcData.target_bulan || new Array(12).fill(0);
+        const cArr = svcData.capaian_bulan || new Array(12).fill(0);
+
+        for (let i = 0; i < 12; i++) {
+          const t = Number(tArr[i] || 0);
+          const c = Number(cArr[i] || 0);
+          let percent = 0;
+          if (t > 0) percent = (c / t) * 100;
+
+          const cell = document.createElement("div");
+          cell.className = "heatmap-cell value";
+          if (percent > 0 && percent < 80) {
+            cell.classList.add("low");
+          } else if (percent >= 80 && percent < 100) {
+            cell.classList.add("mid");
+          } else if (percent >= 100) {
+            cell.classList.add("high");
+          }
+          cell.textContent = t > 0 ? percent.toFixed(0) + "%" : "-";
+          heatmapGrid.appendChild(cell);
+        }
+      });
+    }
+
+    // ========================
+    // RINGKASAN UNTUK PIMPINAN
+    // ========================
+
+    function buildInsights() {
+      const year = getSelectedYear();
+      const { type, value } = getPeriodSelection();
+      ensureYear(year);
+
+      const servicesData = SERVICES.map((svc) => {
+        const { target, capaian } = getServicePeriodData(year, type, value, svc.key);
+        const percent = target > 0 ? (capaian / target) * 100 : 0;
+        return { ...svc, target, capaian, percent };
+      });
+
+      const withCapaian = servicesData.filter((s) => s.capaian > 0 || s.target > 0);
+
+      const topServices = [...withCapaian].sort((a, b) => b.capaian - a.capaian).slice(0, 3);
+      const lowServices = [...withCapaian]
+        .filter((s) => s.target > 0)
+        .sort((a, b) => a.percent - b.percent)
+        .slice(0, 3);
+
+      insightList.innerHTML = "";
+
+      if (topServices.length > 0) {
+        const liTop = document.createElement("li");
+        liTop.textContent =
+          "Kontributor penerimaan terbesar: " +
+          topServices
+            .map(
+              (s) =>
+                `${s.short} (${formatRupiah(s.capaian)}; ${
+                  s.target > 0 ? s.percent.toFixed(1) + "% dari target" : "tanpa target"
+                })`
+            )
+            .join(", ") +
+          ".";
+        insightList.appendChild(liTop);
+      }
+
+      if (lowServices.length > 0) {
+        const liLow = document.createElement("li");
+        liLow.textContent =
+          "Layanan dengan capaian relatif rendah: " +
+          lowServices
+            .map((s) => `${s.short} (${s.percent.toFixed(1)}% dari target ${formatRupiah(s.target)})`)
+            .join(", ") +
+          ".";
+        insightList.appendChild(liLow);
+      }
+
+      const below80 = withCapaian.filter((s) => s.target > 0 && s.percent < 80);
+      let riskLevel = "Rendah";
+      if (below80.length >= 1 && below80.length <= 4) riskLevel = "Sedang";
+      if (below80.length > 4) riskLevel = "Tinggi";
+
+      let riskText = `Tingkat risiko: ${riskLevel}.`;
+      if (below80.length > 0) {
+        riskText += ` Terdapat ${below80.length} layanan dengan capaian di bawah 80% dari target.`;
+      } else {
+        riskText += " Seluruh layanan berada di atas 80% dari target atau belum memiliki target.";
+      }
+      insightRisk.textContent = riskText;
+    }
+
+    // ====================
+    // LAPORAN OTOMATIS
+    // ====================
+
+    function generateReportText() {
+      const year = getSelectedYear();
+      const { type, value } = getPeriodSelection();
+      ensureYear(year);
+
+      const periodText = periodLabel(type, value, year);
+
+      const { totalTarget, totalCapaian } = getTotalForPeriod(year, type, value);
+      const percent = totalTarget > 0 ? (totalCapaian / totalTarget) * 100 : 0;
+      const gap = totalCapaian - totalTarget;
+
+      const prevYear = year - 1;
+      let yoySentence = "Belum terdapat data pembanding pada periode yang sama tahun sebelumnya.";
+      if (dataStore[prevYear]) {
+        const { totalCapaian: prevCapaian } = getTotalForPeriod(prevYear, type, value);
+        if (prevCapaian > 0 && totalCapaian > 0) {
+          const growth = ((totalCapaian - prevCapaian) / prevCapaian) * 100;
+          if (growth > 0) {
+            yoySentence = `Dibandingkan periode yang sama pada tahun ${prevYear}, realisasi penerimaan mengalami kenaikan sebesar ${growth.toFixed(
+              1
+            )}% (dari ${formatRupiah(prevCapaian)} menjadi ${formatRupiah(totalCapaian)}).`;
+          } else if (growth < 0) {
+            yoySentence = `Dibandingkan periode yang sama pada tahun ${prevYear}, realisasi penerimaan mengalami penurunan sebesar ${Math.abs(
+              growth
+            ).toFixed(1)}% (dari ${formatRupiah(prevCapaian)} menjadi ${formatRupiah(totalCapaian)}).`;
+          } else {
+            yoySentence = `Realisasi penerimaan pada periode ini relatif sama dengan periode yang sama pada tahun ${prevYear}.`;
+          }
+        }
+      }
+
+      const servicesData = SERVICES.map((svc) => {
+        const { target, capaian } = getServicePeriodData(year, type, value, svc.key);
+        const percentSvc = target > 0 ? (capaian / target) * 100 : 0;
+        return { ...svc, target, capaian, percent: percentSvc };
+      });
+
+      const withCapaian = servicesData.filter((s) => s.capaian > 0 || s.target > 0);
+      const topServices = [...withCapaian].sort((a, b) => b.capaian - a.capaian).slice(0, 3);
+      const lowServices = [...withCapaian]
+        .filter((s) => s.target > 0)
+        .sort((a, b) => a.percent - b.percent)
+        .slice(0, 3);
+      const below80 = withCapaian.filter((s) => s.target > 0 && s.percent < 80);
+
+      let topSentence = "";
+      if (topServices.length > 0) {
+        topSentence =
+          "Layanan dengan kontribusi penerimaan terbesar adalah " +
+          topServices
+            .map(
+              (s) =>
+                `${s.name} dengan realisasi ${formatRupiah(s.capaian)} (${
+                  s.target > 0 ? s.percent.toFixed(1) + "% dari target" : "belum ditetapkan target"
+                })`
+            )
+            .join("; ") +
+          ".";
+      }
+
+      let lowSentence = "";
+      if (lowServices.length > 0) {
+        lowSentence =
+          "Layanan yang perlu mendapatkan perhatian karena capaian relatif rendah antara lain " +
+          lowServices
+            .map((s) => `${s.name} (${s.percent.toFixed(1)}% dari target ${formatRupiah(s.target)})`)
+            .join("; ") +
+          ".";
+      }
+
+      let riskLevel = "rendah";
+      if (below80.length >= 1 && below80.length <= 4) riskLevel = "sedang";
+      if (below80.length > 4) riskLevel = "tinggi";
+      let riskSentence = `Secara umum, tingkat risiko pencapaian target pada periode ini dapat dikategorikan ${riskLevel}.`;
+      if (below80.length > 0) {
+        riskSentence += ` Terdapat ${below80.length} layanan dengan capaian di bawah 80% dari target, yang memerlukan langkah percepatan dan pendampingan lebih lanjut.`;
+      }
+
+      const prevYearFull = dataStore[prevYear] ? getTotalForPeriod(prevYear, "tahun", null) : null;
+      const { totalCapaian: fullCurrent } = getTotalForPeriod(year, "tahun", null);
+
+      let forecastYearEnd = 0;
+      if (type === "tahun") {
+        forecastYearEnd = totalCapaian;
+      } else {
+        ensureYear(year);
+        const monthTotals = new Array(12).fill(0);
+        SERVICES.forEach((svc) => {
+          const svcData = dataStore[year][svc.key];
+          const cArr = svcData.capaian_bulan || new Array(12).fill(0);
+          cArr.forEach((val, idx) => {
+            monthTotals[idx] += Number(val || 0);
+          });
+        });
+        let lastMonthWithData = -1;
+        for (let i = 11; i >= 0; i--) {
+          if (monthTotals[i] > 0) {
+            lastMonthWithData = i;
+            break;
+          }
+        }
+        if (lastMonthWithData === -1) {
+          forecastYearEnd = 0;
+        } else {
+          const totalSoFar = monthTotals.slice(0, lastMonthWithData + 1).reduce((a, b) => a + b, 0);
+          const avgPerMonth = totalSoFar / (lastMonthWithData + 1);
+          forecastYearEnd = avgPerMonth * 12;
+        }
+      }
+
+      let forecastNext = 0;
+      if (prevYearFull && prevYearFull.totalCapaian > 0 && fullCurrent > 0) {
+        const growthRate = (fullCurrent - prevYearFull.totalCapaian) / prevYearFull.totalCapaian;
+        forecastNext = fullCurrent * (1 + growthRate);
+      } else if (fullCurrent > 0) {
+        forecastNext = fullCurrent * 1.05;
+      }
+
+      const forecastSentence = `Berdasarkan tren saat ini, proyeksi akhir tahun diperkirakan sebesar sekitar ${formatRupiah(
+        forecastYearEnd
+      )}, sedangkan proyeksi total penerimaan tahun berikutnya diperkirakan mencapai sekitar ${formatRupiah(
+        forecastNext
+      )} dengan asumsi pola pertumbuhan yang sama.`;
+
+      const lines = [];
+      lines.push(`Periode pelaporan: ${periodText}.`);
+      if (totalTarget > 0 || totalCapaian > 0) {
+        lines.push(
+          `Pada periode ini, total target penerimaan tercatat sebesar ${formatRupiah(
+            totalTarget
+          )}, dengan realisasi sebesar ${formatRupiah(totalCapaian)}, sehingga tingkat capaian mencapai ${
+            totalTarget > 0 ? percent.toFixed(1) : "0"
+          }%. Gap antara target dan realisasi adalah ${formatRupiah(gap)}.`
+        );
+      } else {
+        lines.push(
+          "Pada periode ini belum terdapat nilai target maupun realisasi yang signifikan, sehingga analisis kuantitatif masih sangat terbatas."
+        );
+      }
+      lines.push(yoySentence);
+      if (topSentence) lines.push(topSentence);
+      if (lowSentence) lines.push(lowSentence);
+      lines.push(riskSentence);
+      lines.push(
+        forecastSentence +
+          " Angka-angka ini bersifat indikatif dan dapat disesuaikan kembali seiring pembaruan data dan kebijakan strategis BLU."
+      );
+      lines.push(
+        "Laporan ini dapat digunakan sebagai dasar pengambilan keputusan manajerial, penajaman strategi pemasaran layanan, serta penyesuaian rencana kerja dan anggaran BLU Balai Besar Tekstil."
+      );
+
+      return lines.join("\n\n");
+    }
+
+    // =========================
+    // HANDLER & INIT
+    // =========================
+
+    function recalculateEverything() {
+      recalculateTableRows();
+      recalculateSummary();
+      buildInsights();
+      rebuildCharts();
+    }
+
+    function handleResetYear() {
+      const year = getSelectedYear();
+      const confirmReset = confirm(
+        `Reset semua data tahun ${year}?\nSeluruh target dan capaian 12 bulan untuk 14 layanan akan dikosongkan.`
+      );
+      if (!confirmReset) return;
+
+      dataStore[year] = {};
+      ensureYear(year);
+      buildTable();
+      saveData();
+      showToast("Data tahun " + year + " telah direset.");
+    }
+
+    function handleExport() {
+      const blob = new Blob([JSON.stringify(dataStore, null, 2)], {
+        type: "application/json"
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "monitoring_penerimaan_14_layanan_monthly.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function handleManualSave() {
+      saveData();
+      showToast("Data tersimpan ke browser (localStorage).");
+    }
+
+    function handleGenerateReport() {
+      const text = generateReportText();
+      reportTextEl.textContent = text;
+      showToast("Laporan otomatis berhasil dibuat.");
+    }
+
+    function handleCopyReport() {
+      const text = reportTextEl.textContent || "";
+      if (!text || text.startsWith("Tekan tombol")) {
+        showToast("Belum ada laporan yang dapat disalin.");
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          () => showToast("Laporan berhasil disalin ke clipboard."),
+          () => showToast("Gagal menyalin laporan.")
+        );
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          showToast("Laporan berhasil disalin ke clipboard.");
+        } catch (e) {
+          showToast("Gagal menyalin laporan.");
+        }
+        document.body.removeChild(textarea);
+      }
+    }
+
+    function handlePeriodTypeChange() {
+      const type = periodTypeSelect.value;
+      monthWrapper.style.display = type === "bulan" ? "" : "none";
+      quarterWrapper.style.display = type === "triwulan" ? "" : "none";
+      semesterWrapper.style.display = type === "semester" ? "" : "none";
+      buildTable();
+    }
+
+    // ============
+    // INIT
+    // ============
+
+    document.addEventListener("DOMContentLoaded", () => {
+      dataStore = loadData() || {};
+      buildYearOptions();
+      buildMonthOptions();
+      ensureYear(getSelectedYear());
+      buildTable();
+      rebuildCharts();
+
+      yearSelect.addEventListener("change", () => {
+        ensureYear(getSelectedYear());
+        buildTable();
+      });
+
+      periodTypeSelect.addEventListener("change", handlePeriodTypeChange);
+      monthSelect.addEventListener("change", buildTable);
+      quarterSelect.addEventListener("change", buildTable);
+      semesterSelect.addEventListener("change", buildTable);
+
+      btnResetYear.addEventListener("click", handleResetYear);
+      btnExport.addEventListener("click", handleExport);
+      btnSave.addEventListener("click", handleManualSave);
+      btnGenerateReport.addEventListener("click", handleGenerateReport);
+      btnCopyReport.addEventListener("click", handleCopyReport);
+
+      // Setelah inisialisasi awal, coba auto-import file Excel default (data-penerimaan-YYYY.xlsx)
+      // untuk tahun-tahun di sekitar tahun berjalan.
+      autoImportDefaultExcels();
+    });
+  
+    // =========================
+    // FUNGSI BANTUAN UNTUK AUTO-IMPORT EXCEL
+    // =========================
+
+   // Cek apakah suatu tahun sudah punya data (ada angka selain 0)
+function yearHasAnyData(year) {
+  const yearData = dataStore[year];
+  if (!yearData) return false;
+  for (const svcKey of Object.keys(yearData)) {
+    const svcData = yearData[svcKey];
+    if (!svcData) continue;
+    const tArr = Array.isArray(svcData.target_bulan) ? svcData.target_bulan : [];
+    const cArr = Array.isArray(svcData.capaian_bulan) ? svcData.capaian_bulan : [];
+    const hasNonZero =
+      tArr.some(v => Number(v || 0) !== 0) ||
+      cArr.some(v => Number(v || 0) !== 0);
+    if (hasNonZero) return true;
+  }
+  return false;
+}
+
+
+    // Import satu workbook Excel ke dataStore untuk 1 tahun tertentu
+    // Mengharapkan struktur:
+    //   - Sheet "target": kolom A = key layanan, kolom B-M = Jan s.d. Des
+    //   - Sheet "capaian": struktur sama
+    function importWorkbookToStore(workbook, year) {
+      const sheetTarget  = workbook.getWorksheet("target");
+      const sheetCapaian = workbook.getWorksheet("capaian");
+
+      if (!sheetTarget && !sheetCapaian) {
+        console.warn("Workbook tidak memiliki sheet 'target' / 'capaian'.");
+        return false;
+      }
+
+      ensureYear(year);
+      let handled = false;
+
+      if (sheetTarget) {
+        sheetTarget.eachRow((row, rowIndex) => {
+          if (rowIndex === 1) return; // header
+          const svcKey = row.getCell(1).value;
+          if (!svcKey || !dataStore[year][svcKey]) return;
+          // Ambil kolom B-M (12 bulan)
+          const values = row.values.slice(2, 14);
+          dataStore[year][svcKey].target_bulan = values.map(v => Number(v) || 0);
+          handled = true;
+        });
+      }
+
+      if (sheetCapaian) {
+        sheetCapaian.eachRow((row, rowIndex) => {
+          if (rowIndex === 1) return;
+          const svcKey = row.getCell(1).value;
+          if (!svcKey || !dataStore[year][svcKey]) return;
+          const values = row.values.slice(2, 14);
+          dataStore[year][svcKey].capaian_bulan = values.map(v => Number(v) || 0);
+          handled = true;
+        });
+      }
+
+      return handled;
+    }
+
+    // Auto-import file-file Excel default dengan pola nama:
+//   data-penerimaan-YYYY.xlsx
+// untuk rentang tahun [currentYear - AUTO_IMPORT_MIN_OFFSET, currentYear + AUTO_IMPORT_MAX_OFFSET]
+// Sekarang: SELALU mencoba meng-import, sehingga file Excel terbaru
+// menjadi sumber kebenaran utama untuk tahun tersebut.
+async function autoImportDefaultExcels() {
+  const currentYear = new Date().getFullYear();
+  const startYear   = currentYear - AUTO_IMPORT_MIN_OFFSET;
+  const endYear     = currentYear + AUTO_IMPORT_MAX_OFFSET;
+
+  for (let year = startYear; year <= endYear; year++) {
+    const fileName = `data-penerimaan-${year}.xlsx`;
+
+    try {
+      const resp = await fetch(fileName);
+      if (!resp.ok) {
+        // Kalau file tidak ada, lanjut ke tahun berikutnya
+        console.warn("File Excel default tidak ditemukan:", fileName);
+        continue;
+      }
+
+      const arrayBuffer = await resp.arrayBuffer();
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(arrayBuffer);
+
+      const handled = importWorkbookToStore(workbook, year);
+      if (handled) {
+        console.log("Auto-import berhasil dari", fileName, "untuk tahun", year);
+      }
+    } catch (err) {
+      console.warn("Gagal auto-import", fileName, err);
+    }
+  }
+
+  // Setelah auto-import selesai, simpan & refresh tampilan
+  saveData();
+  ensureYear(getSelectedYear());
+  buildTable();
+  rebuildCharts();
+}
+
+    // =========================
+    // IMPORT / EXPORT EXCEL
+    // =========================
+
+    const excelInputEl = document.getElementById("excelInput");
+    const btnImportExcel = document.getElementById("btnImportExcel");
+    const btnExportExcel = document.getElementById("btnExportExcel");
+
+    if (btnExportExcel) {
+      btnExportExcel.addEventListener("click", async function () {
+        try {
+          const workbook = new ExcelJS.Workbook();
+          const sheetTarget = workbook.addWorksheet("target");
+          const sheetCapaian = workbook.addWorksheet("capaian");
+
+          const header = ["layanan", ...MONTHS.map(m => m.key)];
+          sheetTarget.addRow(header);
+          sheetCapaian.addRow(header);
+
+          const year = getSelectedYear();
+          ensureYear(year);
+
+          SERVICES.forEach(svc => {
+            const tArr = dataStore[year][svc.key].target_bulan || [];
+            const cArr = dataStore[year][svc.key].capaian_bulan || [];
+            sheetTarget.addRow([svc.key, ...tArr]);
+            sheetCapaian.addRow([svc.key, ...cArr]);
+          });
+
+          const buffer = await workbook.xlsx.writeBuffer();
+          const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `data-penerimaan-${year}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast("✔ Data berhasil diexport ke Excel.");
+        } catch (err) {
+          console.error("Gagal export Excel:", err);
+          showToast("⚠ Terjadi kesalahan saat export Excel.");
+        }
+      });
+    }
+
+    if (btnImportExcel && excelInputEl) {
+      btnImportExcel.addEventListener("click", () => {
+        excelInputEl.value = "";
+        excelInputEl.click();
+      });
+
+      excelInputEl.addEventListener("change", async function (e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const workbook = new ExcelJS.Workbook();
+          await workbook.xlsx.load(arrayBuffer);
+
+          const year = getSelectedYear();
+          const handled = importWorkbookToStore(workbook, year);
+          if (!handled) {
+            showToast("⚠ File Excel tidak sesuai format (sheet 'target' / 'capaian').");
+            return;
+          }
+
+          saveData();
+          buildTable();
+          rebuildCharts();
+          showToast("✔ Data dari Excel berhasil di-import.");
+        } catch (err) {
+          console.error("Gagal import Excel:", err);
+          showToast("⚠ Terjadi kesalahan saat import Excel.");
+        }
+      });
+    }
+
+  </script>
+</body>
+</html>
