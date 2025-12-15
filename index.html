@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Portal Dashboard BLU - Balai Besar Tekstil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <style>
+
+:root{
+  --bg:#020b1c;
+  --bg-soft:#07162b;
+  --primary:#00a6c7;
+  --primary-dark:#00385c;
+  --card-bg:rgba(5,16,35,.78);
+  --card-border:rgba(0,166,199,.25);
+  --text:#e6f4ff;
+  --muted:rgba(230,244,255,.72);
+  --shadow:0 18px 40px rgba(0,0,0,.35);
+  --radius:18px;
+
+  /* diisi JS */
+  --app-h:100dvh;
+  --topH:220px;
+  --contentH:60dvh;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(0,166,199,.18), transparent 35%),
+    radial-gradient(circle at 85% 30%, rgba(249,168,38,.12), transparent 40%),
+    var(--bg);
+  overflow-x:hidden; /* cegah geser kanan-kiri di HP */
+  overflow-y:auto;
+}
+
+/* Shell: default aman untuk mobile (boleh scroll halaman) */
+.app-shell{
+  width:100%;
+  max-width:1200px;
+  margin:0 auto;
+  padding:12px 12px max(18px, env(safe-area-inset-bottom));
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  min-height:var(--app-h);
+}
+
+/* Desktop/tablet: jadikan “panel” fixed-height, scroll hanya di konten */
+@media (min-width: 768px){
+  body{ overflow:hidden; }
+  .app-shell{ height:var(--app-h); }
+}
+
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  box-shadow:var(--shadow);
+  border-radius:var(--radius);
+  backdrop-filter: blur(10px);
+}
+
+header.app-header{
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.header-left{display:flex; gap:12px; align-items:center; min-width:0}
+.logo-group-main{display:flex; gap:10px; align-items:center; flex:0 0 auto}
+.logo-bbt{height:44px; width:auto; display:block}
+.logo-issc{height:34px; width:auto; max-width:170px; display:block}
+.logo-blu{height:44px; width:44px; object-fit:contain; display:block}
+
+.header-text{min-width:0}
+.header-text h1{
+  margin:0;
+  font-size:1.08rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  line-height:1.15;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.header-text p{
+  margin:4px 0 0 0;
+  font-size:.86rem;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.menu-card{ padding:10px 12px; }
+.menu-tabs{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.menu-tab{
+  border-radius:999px;
+  padding:9px 12px;
+  font-size:.84rem;
+  border:1px solid rgba(0,255,255,.35);
+  background:rgba(2,20,40,.85);
+  color:var(--text);
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  user-select:none;
+  white-space:nowrap;
+}
+.menu-tab.active{
+  background:linear-gradient(135deg, rgba(0,166,199,.35), rgba(0,56,92,.75));
+  border-color:rgba(0,166,199,.65);
+}
+
+.content-card{
+  padding:6px;
+  display:flex;
+  flex-direction:column;
+  min-height:240px;
+}
+
+/* Desktop/tablet: tinggi konten dihitung, iframe full */
+@media (min-width:768px){
+  .content-card{
+    height:var(--contentH);
+    min-height:0;
+    overflow:hidden;
+  }
+}
+
+/* Mobile: biarkan tinggi alami, tapi iframe tetap min tinggi enak dilihat */
+@media (max-width: 767.98px){
+  .content-card{
+    height:auto;
+    overflow:visible;
+  }
+}
+
+.tab-content{
+  display:none;
+  width:100%;
+}
+.tab-content.active{display:block;}
+
+.tab-frame{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  background:#000814;
+  display:block;
+
+  /* Default: “cukup tinggi” di HP portrait */
+  min-height:65vh;
+}
+
+/* Desktop/tablet: iframe ikut tinggi kontainer */
+@media (min-width:768px){
+  .tab-content, .tab-frame{ height:100%; min-height:0; }
+}
+
+/* HP portrait kecil: ringkas header, tab jadi full width */
+@media (max-width: 420px){
+  header.app-header{ padding:10px 10px; }
+  .logo-bbt{ height:38px; }
+  .logo-issc{ height:28px; max-width:150px; }
+  .logo-blu{ height:38px; width:38px; }
+  .header-text h1{ font-size:.98rem; letter-spacing:.06em; }
+  .menu-card{ padding:9px 10px; }
+  .menu-tabs{ gap:8px; }
+  .menu-tab{ width:100%; justify-content:center; }
+  .tab-frame{ min-height:68vh; }
+}
+
+/* HP landscape (tinggi pendek): paksa menu 1 baris (scroll horizontal), 
+   dan pastikan iframe tetap muncul (min-height berbasis viewport) */
+@media (max-height: 430px) and (orientation: landscape){
+  header.app-header{ padding:8px 10px; }
+  .header-text p{ display:none; } /* hemat tinggi */
+  .menu-tabs{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:4px;
+  }
+  .menu-tab{ flex:0 0 auto; padding:7px 10px; }
+  .tab-frame{ min-height: calc(var(--app-h) - var(--topH) + 40px); }
+}
+
+/* cegah item fokus menyebabkan zoom aneh */
+button{ -webkit-tap-highlight-color: transparent; }
+
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- HEADER ATAS -->
+    <header class="app-header card">
+      <div class="header-left">
+        <div class="logo-group-main">
+          <img src="logo-bbt.png" alt="Logo Balai Besar Tekstil" class="logo-bbt" />
+          <img src="logo-issc.png" alt="Logo Industrial Services &amp; Solution Center" class="logo-issc" />
+        </div>
+        <div class="header-text">
+          <h1>PORTAL DASHBOARD BLU</h1>
+          <p>Balai Besar Tekstil &mdash; Monitoring pendapatan dan kepuasan pelanggan.</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <img src="Logo BLU Speed.png" alt="Logo BLU Speed" class="logo-blu" />
+      </div>
+    </header>
+
+    <!-- MENU PILIH DASHBOARD -->
+    <section class="menu-card">
+      <div class="menu-title">Pilih Dashboard:</div>
+      <div class="menu-tabs">
+        <button class="menu-tab active" data-target="tab-penerimaan">
+          <span class="icon">📊</span>
+          <span>Dashboard Penerimaan 14 Layanan</span>
+        </button>
+        <button class="menu-tab" data-target="tab-ikm-nps">
+          <span class="icon">📈</span>
+          <span>Dashboard IKM &amp; NPS</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- KONTEN DASHBOARD (IFRAME) -->
+    <section class="content-card card">
+      <div class="tab-content active" id="tab-penerimaan">
+        <iframe src="dashboard_penerimaan.html" class="tab-frame" title="Dashboard Penerimaan 14 Layanan"></iframe>
+      </div>
+
+      <div class="tab-content" id="tab-ikm-nps">
+        <iframe src="index_ikm_nps_autoload.html" class="tab-frame" title="Dashboard IKM &amp; NPS"></iframe>
+      </div>
+    </section>
+  </div>
+
+  <script>
+
+// Hitung tinggi viewport yang akurat (iOS/Android address bar) + tinggi konten
+function setViewportVars(){
+  const vv = window.visualViewport;
+  const h = (vv && vv.height) ? vv.height : window.innerHeight;
+
+  document.documentElement.style.setProperty('--app-h', `${h}px`);
+
+  const header = document.querySelector('header.app-header');
+  const menu = document.querySelector('.menu-card');
+
+  const headerH = header ? header.offsetHeight : 0;
+  const menuH = menu ? menu.offsetHeight : 0;
+
+  // gap antar card (14px) * 2 + padding total (kira2 24px)
+  const topH = headerH + menuH + 28 + 24;
+
+  // Pastikan tidak negatif/terlalu kecil (landscape HP sering sangat pendek)
+  const contentH = Math.max(180, h - topH);
+
+  document.documentElement.style.setProperty('--topH', `${topH}px`);
+  document.documentElement.style.setProperty('--contentH', `${contentH}px`);
+}
+
+window.addEventListener('resize', setViewportVars, {passive:true});
+window.addEventListener('orientationchange', () => setTimeout(setViewportVars, 250), {passive:true});
+document.addEventListener('DOMContentLoaded', () => {
+  setViewportVars();
+
+  // Tabs
+  const tabs = document.querySelectorAll('.menu-tab');
+  const contents = document.querySelectorAll('.tab-content');
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.getAttribute('data-target');
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      contents.forEach(c => c.classList.toggle('active', c.id === targetId));
+
+      // setelah ganti tab, ukur ulang (kadang tinggi menu berubah karena wrap)
+      setTimeout(setViewportVars, 60);
+    });
+  });
+});
+
+if (window.visualViewport){
+  window.visualViewport.addEventListener('resize', setViewportVars, {passive:true});
+  window.visualViewport.addEventListener('scroll', setViewportVars, {passive:true});
+}
+
+</script>
+</body>
+</html>
