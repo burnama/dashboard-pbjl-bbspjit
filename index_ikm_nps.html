@@ -28,7 +28,9 @@
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body { height: 100%; width: 100%; }
+    body { overflow-x: hidden; }
+body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
@@ -41,6 +43,9 @@
     }
 
     .app-shell {
+      height: calc(var(--vh, 1vh) * 100);
+      overflow: hidden;
+
       max-width: 100%;
       width: 100%;
       margin: 0;
@@ -64,7 +69,7 @@
       box-shadow: var(--shadow-soft);
       color: #ffffff;
       position: sticky;
-      top: 0;
+      top: env(safe-area-inset-top, 0px);
       z-index: 20;
       backdrop-filter: blur(18px);
       border: 1px solid rgba(0, 255, 255, 0.25);
@@ -173,6 +178,10 @@
       flex-direction: column;
       gap: 18px;
       flex: 1;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 18px;
+      
     }
 
     .card {
@@ -244,7 +253,9 @@
       filter: brightness(0.95);
     }
 
-    .btn-icon { font-size: 1rem; }
+    .btn-icon {
+      font-size: 1rem;
+    }
 
     .toast {
       position: fixed;
@@ -278,7 +289,9 @@
     }
 
     @media (max-width: 900px) {
-      .summary-grid { grid-template-columns: minmax(0, 1fr); }
+      .summary-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
     .summary-card {
@@ -317,7 +330,9 @@
     }
 
     @media (max-width: 900px) {
-      .ikm-nps-grid { grid-template-columns: minmax(0, 1fr); }
+      .ikm-nps-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
     .ikm-nps-metric {
@@ -400,7 +415,9 @@
     }
 
     @media (min-width: 1200px) and (min-height: 800px) {
-      .chart-container { height: 300px; }
+      .chart-container {
+        height: 300px;
+      }
     }
 
     .bottom-grid {
@@ -411,7 +428,9 @@
     }
 
     @media (max-width: 980px) {
-      .bottom-grid { grid-template-columns: minmax(0, 1fr); }
+      .bottom-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
     .report-area {
@@ -438,19 +457,54 @@
     }
 
     @media (max-width: 980px) {
-      header.app-header { flex-direction: column; align-items: flex-start; }
-      .header-left { width: 100%; }
+      header.app-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-left {
+        width: 100%;
+      }
+
       .logo-bbt { height: 44px; }
       .logo-issc { height: 32px; }
       .logo-blu { height: 46px; width: 46px; }
     }
 
     @media (max-width: 640px) {
-      .header-text h1 { font-size: 1.05rem; }
-      .header-text p { font-size: 0.8rem; }
-      .selector-group label { display: none; }
-      .selector-group select { font-size: 0.8rem; }
+      .header-text h1 {
+        font-size: 1.05rem;
+      }
+
+      .header-text p {
+        font-size: 0.8rem;
+      }
+
+      .selector-group label {
+        display: none;
+      }
+
+      .selector-group select {
+        font-size: 0.8rem;
+      }
     }
+  /* ===== Mobile polish (portrait & landscape) ===== */
+@media (max-width: 520px) {
+  .app-shell { padding: 10px 10px 18px; }
+  header.app-header { padding: 10px 12px; border-radius: 16px; }
+  .header-text h1 { white-space: normal; line-height: 1.15; }
+}
+/* Landscape phones: keep header compact so content doesn't get clipped */
+@media (max-height: 420px) and (orientation: landscape) {
+  header.app-header { position: sticky; padding: 8px 10px; gap: 10px; }
+  .logo-bbt { height: 34px; }
+  .logo-issc { height: 24px; }
+  .logo-blu { height: 34px; width: 34px; }
+  .header-text h1 { font-size: 0.95rem; white-space: normal; }
+  .header-text p { display: none; }
+  .selector-group { padding: 4px 8px; }
+  .selector-group select { padding: 2px 8px; }
+}
   </style>
 </head>
 <body>
@@ -458,6 +512,7 @@
     <header class="app-header">
       <div class="header-left">
         <div class="logo-group-main">
+          <!-- Sesuaikan dengan file logo yang sudah ada -->
           <img src="logo-bbt.png" alt="Logo Balai Besar Tekstil" class="logo-bbt" />
           <img src="logo-issc.png" alt="Logo Industrial Services & Solution Center" class="logo-issc" />
         </div>
@@ -480,17 +535,19 @@
             <option value="q4">Triwulan 4 (Okt–Des)</option>
           </select>
         </div>
+        <!-- Samakan nama file logo dengan yang ada di folder -->
         <img src="Logo BLU Speed.png" alt="Logo BLU Speed" class="logo-blu" />
       </div>
     </header>
 
     <main>
+      <!-- KARTU IMPORT & STATUS DATA -->
       <section class="card">
         <div class="card-header">
           <div>
             <h2>Data IKM &amp; NPS per Triwulan</h2>
             <span>
-              Input data dari file Excel <code>data-ikm-nps-YYYY.xlsx</code>
+              Input data dari file Excel <code>data-ikm-nps-YYYY.xlsx</code>  
               (sheet <code>ikm</code> dan <code>nps</code>, baris 2–5 untuk Triwulan 1–4).
             </span>
           </div>
@@ -498,6 +555,9 @@
         <div class="toolbar">
           <button class="btn btn-primary" id="btnImportExcel">
             <span class="btn-icon">📥</span> Import Excel
+          </button>
+          <button class="btn" id="btnLoadFromServer">
+            <span class="btn-icon">🌐</span> Muat dari Server
           </button>
           <button class="btn" id="btnSave">
             <span class="btn-icon">💾</span> Simpan ke Browser
@@ -508,10 +568,11 @@
         </div>
         <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;" />
         <div class="helper-text" id="dataInfo">
-          Memuat data dari server... (jika tidak ada, silakan Import Excel manual)
+          Belum ada data yang dimuat. Klik <b>Muat dari Server</b> (jika file Excel sudah ada di folder website) atau klik <b>Import Excel</b> untuk memilih file <code>data-ikm-nps-YYYY.xlsx</code> dari komputer.
         </div>
       </section>
 
+      <!-- RINGKASAN IKM & REKOMENDASI UNSUR -->
       <section class="card">
         <div class="card-header">
           <div>
@@ -561,6 +622,7 @@
         </div>
       </section>
 
+      <!-- CHART & LAPORAN -->
       <section class="bottom-grid">
         <section class="card">
           <div class="card-header">
@@ -622,7 +684,48 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
   </div>
 
   <script>
-    const STORAGE_KEY = "ikm_nps_dashboard_data_v4_serverfetch";
+  // Fix 100vh issues on mobile (address bar show/hide) and inside iframe
+  (function () {
+    function setVH() {
+      var h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty('--vh', (h * 0.01) + 'px');
+    }
+    setVH();
+    window.addEventListener('resize', setVH, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', setVH, { passive: true });
+      window.visualViewport.addEventListener('scroll', setVH, { passive: true });
+    }
+  })();
+</script>
+
+  <script>
+    // =========================
+    // DATA MODEL
+    // =========================
+    // dataStore[year] = {
+    //   ikm: [4],
+    //   nps: [4],
+    //   ikmDetail: [
+    //     { highestValue, lowestValue, highestName, lowestName }, ...
+    //   ]
+    // }
+
+    const STORAGE_KEY = "ikm_nps_dashboard_data_v3";
+
+// ===== AUTO-LOAD dari Server (untuk hosting non-lokal) =====
+// Letakkan file Excel di folder yang sama dengan HTML ini (repo GitHub Pages),
+// misalnya: data-ikm-nps-2025.xlsx, data-ikm-nps-2024.xlsx, dst.
+// Sistem akan mencoba memuat otomatis saat halaman dibuka.
+const SERVER_FILE_CANDIDATES = [
+  "data-ikm-nps.xlsx",
+  "data-ikm-nps-2025.xlsx",
+  "data-ikm-nps-2024.xlsx",
+  "data-ikm-nps-2023.xlsx",
+  "data-ikm-nps-2026.xlsx",
+  "data-ikm-nps-2027.xlsx"
+];
+const SERVER_META_KEY = "ikm_nps_last_server_load_v1";
 
     const yearSelect       = document.getElementById("yearSelect");
     const quarterSelect    = document.getElementById("quarterSelect");
@@ -630,6 +733,7 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
     const excelInput       = document.getElementById("excelInput");
     const btnSave          = document.getElementById("btnSave");
     const btnResetYear     = document.getElementById("btnResetYear");
+    const btnLoadFromServer = document.getElementById("btnLoadFromServer");
     const dataInfoEl       = document.getElementById("dataInfo");
 
     const summaryPeriodLabel = document.getElementById("summaryPeriodLabel");
@@ -663,10 +767,14 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
     let chartIKM  = null;
     let chartNPS  = null;
 
+    // =========================
+    // UTILITAS
+    // =========================
+
     function showToast(message) {
       toastEl.textContent = message;
       toastEl.classList.add("show");
-      setTimeout(() => toastEl.classList.remove("show"), 2200);
+      setTimeout(() => toastEl.classList.remove("show"), 2000);
     }
 
     function loadData() {
@@ -675,14 +783,15 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
       try {
         const parsed = JSON.parse(raw);
         return typeof parsed === "object" && parsed !== null ? parsed : {};
-      } catch {
+      } catch (e) {
+        console.warn("Gagal membaca localStorage:", e);
         return {};
       }
     }
 
-    function saveData(silent=false) {
+    function saveData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataStore));
-      if (!silent) showToast("✔ Data IKM & NPS tersimpan di browser.");
+      showToast("✔ Data IKM & NPS tersimpan di browser.");
     }
 
     function listYearsInStore() {
@@ -702,19 +811,45 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
             { highestValue: null, lowestValue: null, highestName: null, lowestName: null },
             { highestValue: null, lowestValue: null, highestName: null, lowestName: null },
             { highestValue: null, lowestValue: null, highestName: null, lowestName: null }
-          ],
-          _source: null,
-          _loadedAt: null
+          ]
         };
+      } else {
+        if (!Array.isArray(dataStore[year].ikm)) {
+          dataStore[year].ikm = [null, null, null, null];
+        }
+        if (!Array.isArray(dataStore[year].nps)) {
+          dataStore[year].nps = [null, null, null, null];
+        }
+        if (!Array.isArray(dataStore[year].ikmDetail)) {
+          dataStore[year].ikmDetail = [];
+        }
+        while (dataStore[year].ikm.length < 4) dataStore[year].ikm.push(null);
+        while (dataStore[year].nps.length < 4) dataStore[year].nps.push(null);
+        while (dataStore[year].ikmDetail.length < 4) {
+          dataStore[year].ikmDetail.push({
+            highestValue: null, lowestValue: null,
+            highestName: null, lowestName: null
+          });
+        }
       }
     }
 
-    function buildYearOptions(preferredYears) {
+    function buildYearOptions() {
+      const years = listYearsInStore();
       const nowYear = new Date().getFullYear();
-      const years = preferredYears?.length ? preferredYears : listYearsInStore();
 
       yearSelect.innerHTML = "";
-      const baseYears = (years.length ? years : [nowYear]).slice().sort((a,b)=>a-b);
+      let baseYears = [];
+
+      if (years.length === 0) {
+        baseYears = [nowYear];
+      } else {
+        const minY = Math.min(...years);
+        const maxY = Math.max(...years);
+        for (let y = minY; y <= maxY; y++) {
+          baseYears.push(y);
+        }
+      }
 
       baseYears.forEach(y => {
         const opt = document.createElement("option");
@@ -723,7 +858,11 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
         yearSelect.appendChild(opt);
       });
 
-      yearSelect.value = (years.length ? Math.max(...years) : nowYear);
+      if (years.length > 0) {
+        yearSelect.value = Math.max(...years);
+      } else {
+        yearSelect.value = nowYear;
+      }
     }
 
     function getSelectedYear() {
@@ -736,28 +875,37 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
     }
 
     function quarterLabel(qIndex) {
-      return [
+      const map = [
         "Triwulan 1 (Jan–Mar)",
         "Triwulan 2 (Apr–Jun)",
         "Triwulan 3 (Jul–Sep)",
         "Triwulan 4 (Okt–Des)"
-      ][qIndex] || "";
+      ];
+      return map[qIndex] || "";
     }
 
     // Parsing angka lokal (Indonesia), termasuk koma & persen
-    // - Jika Excel persen disimpan sebagai number 0.8213 => jadi 82.13
-    // - Jika string "82,13%" => jadi 82.13
     function parseLocaleNumber(raw, isPercent = false) {
       if (raw === null || raw === undefined) return null;
 
+      // Jika dari Excel berupa angka murni:
+      // - Untuk IKM: langsung dipakai (misal 3.77)
+      // - Untuk NPS (format persen di Excel): 0.8213 -> kita ubah menjadi 82.13
       if (typeof raw === "number") {
-        return isPercent ? raw * 100 : raw;
+        if (isPercent) {
+          return raw * 100; // 0.8213 -> 82.13
+        }
+        return raw;
       }
 
+      // Jika berupa string (misal "82,13%" atau "82.13")
       let s = String(raw).trim().replace(/\s+/g, "");
-      if (isPercent) s = s.replace("%", "");
+      if (isPercent) {
+        s = s.replace("%", "");
+      }
 
       if (s.includes(",") && s.includes(".")) {
+        // Asumsikan '.' sebagai pemisah ribuan, ',' sebagai desimal
         s = s.replace(/\./g, "").replace(",", ".");
       } else if (s.includes(",")) {
         s = s.replace(",", ".");
@@ -765,9 +913,10 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
 
       const val = parseFloat(s);
       if (isNaN(val)) return null;
-      return val; // untuk persen: 0–100 (bukan 0–1)
+      return val; // sudah dalam satuan yang kita mau (0–100 untuk persen)
     }
 
+    // IKM skala 1–4 (per PermenPAN biasanya)
     function classifyIKM(value) {
       if (value == null || isNaN(value)) return "Belum ada data IKM.";
       if (value >= 3.26) return "Mutu Pelayanan: Sangat Baik (3,26–4,00).";
@@ -777,13 +926,23 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
       return "Skor di luar rentang skala 1–4.";
     }
 
+    // NPS menurut teori: NPS = %Promoters - %Detractors
+    // Kategori umum: <0 Buruk, 0–30 Perlu Perbaikan, 30–70 Baik, >70 Kelas Dunia
     function classifyNPS(value) {
       if (value == null || isNaN(value)) return "Belum ada data NPS.";
-      if (value > 70) return "Kategori: World Class. Persentase Promoter jauh lebih besar daripada Detractor.";
-      if (value > 30) return "Kategori: Baik. Proporsi Promoter cukup tinggi, namun masih ada ruang perbaikan.";
-      if (value >= 0) return "Kategori: Perlu Perbaikan. Promoter dan Detractor relatif seimbang atau sedikit lebih banyak Promoter.";
+      if (value > 70) {
+        return "Kategori: World Class. Persentase Promoter jauh lebih besar daripada Detractor.";
+      } else if (value > 30) {
+        return "Kategori: Baik. Proporsi Promoter cukup tinggi, namun masih ada ruang perbaikan.";
+      } else if (value >= 0) {
+        return "Kategori: Perlu Perbaikan. Promoter dan Detractor relatif seimbang atau sedikit lebih banyak Promoter.";
+      }
       return "Kategori: Negatif. Detractor lebih banyak dari Promoter, perlu tindakan perbaikan serius.";
     }
+
+    // =========================
+    // Rekomendasi Unsur IKM
+    // =========================
 
     function buildIkmRecommendation(detail) {
       const { highestName, highestValue, lowestName, lowestValue } = detail || {};
@@ -806,8 +965,13 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
         text  = highestPart + " Unsur ini dapat dijadikan best practice yang perlu dipertahankan dan direplikasi pada aspek lain. ";
         text += lowestPart + " Unsur ini perlu menjadi prioritas program perbaikan, misalnya melalui penyederhanaan prosedur, peningkatan kecepatan layanan, atau penguatan komunikasi dengan pengguna layanan.";
       }
+
       return { title, text };
     }
+
+    // =========================
+    // UPDATE UI
+    // =========================
 
     function updateSummaryUI() {
       const year = getSelectedYear();
@@ -818,6 +982,7 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
       const ikmDetail = dataStore[year].ikmDetail;
 
       const ikmValid = ikmArr.filter(v => typeof v === "number");
+
       if (ikmValid.length > 0) {
         const avgIkm = ikmValid.reduce((a, b) => a + b, 0) / ikmValid.length;
         avgIkmValueEl.textContent = avgIkm.toFixed(2);
@@ -832,26 +997,34 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
       const npsVal = npsArr[qIndex];
       const detail = ikmDetail[qIndex] || {};
 
+      // IKM triwulan
       ikmValueEl.textContent = (typeof ikmVal === "number") ? ikmVal.toFixed(2) : "-";
       ikmLabelEl.textContent = classifyIKM(ikmVal);
 
       ikmHighestNameEl.textContent = detail.highestName || "-";
-      ikmHighestValueEl.textContent = (typeof detail.highestValue === "number") ? detail.highestValue.toFixed(2) : "-";
+      ikmHighestValueEl.textContent = (typeof detail.highestValue === "number")
+        ? detail.highestValue.toFixed(2)
+        : "-";
 
+      // BUG FIX: jangan pakai variabel lowestValue yang tidak didefinisikan
       ikmLowestNameEl.textContent = detail.lowestName || "-";
-      ikmLowestValueEl.textContent = (typeof detail.lowestValue === "number") ? detail.lowestValue.toFixed(2) : "-";
+      ikmLowestValueEl.textContent = (typeof detail.lowestValue === "number")
+        ? detail.lowestValue.toFixed(2)
+        : "-";
 
-      npsValueEl.textContent = (typeof npsVal === "number") ? npsVal.toFixed(2) + " %" : "-";
+      // NPS triwulan (0–100%, dua desimal)
+      npsValueEl.textContent = (typeof npsVal === "number")
+        ? npsVal.toFixed(2) + " %"
+        : "-";
       npsLabelEl.textContent = classifyNPS(npsVal);
 
+      // Rekomendasi Unsur IKM
       const reco = buildIkmRecommendation(detail);
       ikmRecoTitleEl.textContent = reco.title;
       ikmRecoTextEl.innerHTML = reco.text;
 
       summaryPeriodLabel.innerHTML = `Tahun <b>${year}</b> &mdash; ${quarterLabel(qIndex)}`;
-
-      const src = dataStore[year]._source ? `Sumber: <b>${dataStore[year]._source}</b>` : "Sumber: -";
-      dataInfoEl.innerHTML = `Data IKM &amp; NPS Tahun <b>${year}</b> siap. ${src}`;
+      dataInfoEl.innerHTML = `Data IKM &amp; NPS telah dimuat untuk Tahun <b>${year}</b> (Triwulan 1–4).`;
     }
 
     function updateCharts() {
@@ -862,57 +1035,102 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
       const ikmSeries = dataStore[year].ikm.map(v => (typeof v === "number" ? v : null));
       const npsSeries = dataStore[year].nps.map(v => (typeof v === "number" ? v : null));
 
+      // Chart IKM
       const ctxIkm = ikmChartCanvas.getContext("2d");
       if (chartIKM) chartIKM.destroy();
       chartIKM = new Chart(ctxIkm, {
         type: "line",
         data: {
           labels,
-          datasets: [{
-            label: "IKM",
-            data: ikmSeries,
-            borderColor: "rgba(0,166,199,1)",
-            backgroundColor: "rgba(0,166,199,0.2)",
-            tension: 0.3,
-            spanGaps: true,
-            pointRadius: 4
-          }]
+          datasets: [
+            {
+              label: "IKM",
+              data: ikmSeries,
+              borderColor: "rgba(0,166,199,1)",
+              backgroundColor: "rgba(0,166,199,0.2)",
+              tension: 0.3,
+              spanGaps: true,
+              pointRadius: 4
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: "#e6f4ff", font: { size: 10 } } } },
+          plugins: {
+            legend: {
+              labels: {
+                color: "#e6f4ff",
+                font: { size: 10 }
+              }
+            }
+          },
           scales: {
-            x: { ticks: { color: "#9fb3d1", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.08)" } },
-            y: { min: 1, max: 4, ticks: { stepSize: 0.5, color: "#9fb3d1", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.08)" } }
+            x: {
+              ticks: { color: "#9fb3d1", font: { size: 10 } },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            },
+            y: {
+              min: 1,
+              max: 4,
+              ticks: {
+                stepSize: 0.5,
+                color: "#9fb3d1",
+                font: { size: 10 }
+              },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            }
           }
         }
       });
       chartInfoIkmEl.textContent = `Tahun ${year}, IKM skala 1–4 per Triwulan.`;
 
+      // Chart NPS (0–100%)
       const ctxNps = npsChartCanvas.getContext("2d");
       if (chartNPS) chartNPS.destroy();
       chartNPS = new Chart(ctxNps, {
         type: "line",
         data: {
           labels,
-          datasets: [{
-            label: "NPS",
-            data: npsSeries,
-            borderColor: "rgba(249,168,38,1)",
-            backgroundColor: "rgba(249,168,38,0.2)",
-            tension: 0.3,
-            spanGaps: true,
-            pointRadius: 4
-          }]
+          datasets: [
+            {
+              label: "NPS",
+              data: npsSeries,
+              borderColor: "rgba(249,168,38,1)",
+              backgroundColor: "rgba(249,168,38,0.2)",
+              tension: 0.3,
+              spanGaps: true,
+              pointRadius: 4
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: "#e6f4ff", font: { size: 10 } } } },
+          plugins: {
+            legend: {
+              labels: {
+                color: "#e6f4ff",
+                font: { size: 10 }
+              }
+            }
+          },
           scales: {
-            x: { ticks: { color: "#9fb3d1", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.08)" } },
-            y: { min: 0, max: 100, ticks: { stepSize: 10, color: "#9fb3d1", font: { size: 10 }, callback: (v) => v + " %" }, grid: { color: "rgba(255,255,255,0.08)" } }
+            x: {
+              ticks: { color: "#9fb3d1", font: { size: 10 } },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            },
+            y: {
+              min: 0,
+              max: 100,
+              ticks: {
+                stepSize: 10,
+                color: "#9fb3d1",
+                font: { size: 10 },
+                callback: (v) => v + " %"
+              },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            }
           }
         }
       });
@@ -925,147 +1143,134 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
     }
 
     // =========================
-    // PARSE WORKBOOK (dipakai import manual & fetch server)
+    // IMPORT EXCEL
     // =========================
-    async function parseWorkbookToStore(workbook, year, sourceLabel) {
-      ensureYear(year);
+// =========================
+// PARSE WORKBOOK (IKM & NPS)
+// =========================
+function parseWorkbookIntoStore(workbook, year) {
+  ensureYear(year);
 
-      const sheetIKM = workbook.getWorksheet("ikm");
-      const sheetNPS = workbook.getWorksheet("nps");
+  const sheetIKM = workbook.getWorksheet("ikm");
+  const sheetNPS = workbook.getWorksheet("nps");
 
-      if (!sheetIKM && !sheetNPS) {
-        throw new Error("Sheet 'ikm' atau 'nps' tidak ditemukan.");
-      }
+  if (!sheetIKM && !sheetNPS) {
+    throw new Error("Sheet 'ikm' atau 'nps' tidak ditemukan.");
+  }
 
-      if (sheetIKM) {
-        for (let i = 0; i < 4; i++) {
-          const rowIdx = 2 + i;
-          const row = sheetIKM.getRow(rowIdx);
-          const ikmValRaw   = row.getCell(2).value;
-          const highestRaw  = row.getCell(3).value;
-          const lowestRaw   = row.getCell(4).value;
-          const highestName = row.getCell(5).value;
-          const lowestName  = row.getCell(6).value;
+  // IKM: triwulan | IKM | unsur_ikm_tertinggi | unsur_ikm_terendah | unsur_tertinggi | unsur_terendah
+  if (sheetIKM) {
+    for (let i = 0; i < 4; i++) {
+      const rowIdx = 2 + i;
+      const row = sheetIKM.getRow(rowIdx);
 
-          const ikmVal      = parseLocaleNumber(ikmValRaw, false);
-          const highestVal  = parseLocaleNumber(highestRaw, false);
-          const lowestVal   = parseLocaleNumber(lowestRaw, false);
+      const ikmValRaw   = row.getCell(2).value;
+      const highestRaw  = row.getCell(3).value;
+      const lowestRaw   = row.getCell(4).value;
+      const highestName = row.getCell(5).value;
+      const lowestName  = row.getCell(6).value;
 
-          if (ikmVal !== null) dataStore[year].ikm[i] = ikmVal;
-          dataStore[year].ikmDetail[i] = {
-            highestValue: highestVal,
-            lowestValue: lowestVal,
-            highestName: highestName || null,
-            lowestName: lowestName || null
-          };
-        }
-      }
+      const ikmVal      = parseLocaleNumber(ikmValRaw, false);
+      const highestVal  = parseLocaleNumber(highestRaw, false);
+      const lowestVal   = parseLocaleNumber(lowestRaw, false);
 
-      if (sheetNPS) {
-        for (let i = 0; i < 4; i++) {
-          const rowIdx = 2 + i;
-          const row = sheetNPS.getRow(rowIdx);
-          const npsRaw = row.getCell(2).value;
-          const npsVal = parseLocaleNumber(npsRaw, true); // selalu 0–100
-          if (npsVal !== null) dataStore[year].nps[i] = npsVal;
-        }
-      }
+      if (ikmVal !== null) dataStore[year].ikm[i] = ikmVal;
 
-      dataStore[year]._source = sourceLabel || "unknown";
-      dataStore[year]._loadedAt = new Date().toISOString();
+      dataStore[year].ikmDetail[i] = {
+        highestValue: highestVal,
+        lowestValue: lowestVal,
+        highestName: highestName || null,
+        lowestName: lowestName || null
+      };
     }
+  }
 
-    // =========================
-    // IMPORT MANUAL (file picker)
-    // =========================
+  // NPS: triwulan | NPS (misal 82,13% atau 0.8213 jika format persen Excel)
+  if (sheetNPS) {
+    for (let i = 0; i < 4; i++) {
+      const rowIdx = 2 + i;
+      const row = sheetNPS.getRow(rowIdx);
+      const npsRaw = row.getCell(2).value;
+      const npsVal = parseLocaleNumber(npsRaw, true); // percent 0–100
+      if (npsVal !== null) dataStore[year].nps[i] = npsVal;
+    }
+  }
+
+  // Pastikan tahun ada di dropdown
+  if (![...yearSelect.options].some(opt => parseInt(opt.value, 10) === year)) {
+    const opt = document.createElement("option");
+    opt.value = year;
+    opt.textContent = year;
+    yearSelect.appendChild(opt);
+  }
+  yearSelect.value = year;
+
+  // Simpan agar tidak perlu upload ulang di domain yang sama
+  saveData();
+
+  refreshAllUI();
+}
+
+async function fetchExcelFromUrl(url) {
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const buf = await res.arrayBuffer();
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buf);
+  return wb;
+}
+
+function detectYearFromFilename(filename) {
+  const match = String(filename || "").match(/(\d{4})/);
+  if (match) return parseInt(match[1], 10);
+  return new Date().getFullYear();
+}
+
+async function autoLoadFromServer() {
+  for (const file of SERVER_FILE_CANDIDATES) {
+    try {
+      const wb = await fetchExcelFromUrl(file);
+      const year = detectYearFromFilename(file);
+      parseWorkbookIntoStore(wb, year);
+
+      localStorage.setItem(SERVER_META_KEY, JSON.stringify({
+        file,
+        year,
+        loaded_at: new Date().toISOString()
+      }));
+
+      dataInfoEl.innerHTML =
+        `✔ Data dimuat otomatis dari server: <b>${file}</b> (Tahun <b>${year}</b>).`;
+      return true;
+    } catch (e) {
+      // coba file berikutnya
+    }
+  }
+  return false;
+}
+
+
     async function importExcelFile(file) {
-      const workbook = new ExcelJS.Workbook();
-      const buffer = await file.arrayBuffer();
-      await workbook.xlsx.load(buffer);
+  try {
+    const workbook = new ExcelJS.Workbook();
+    const buffer = await file.arrayBuffer();
+    await workbook.xlsx.load(buffer);
 
-      const name = file.name || "";
-      const matchYear = name.match(/(\d{4})/);
-      const year = matchYear ? parseInt(matchYear[1], 10) : new Date().getFullYear();
+    // Deteksi tahun dari nama file: data-ikm-nps-YYYY.xlsx
+    const year = detectYearFromFilename(file.name);
+    parseWorkbookIntoStore(workbook, year);
 
-      await parseWorkbookToStore(workbook, year, name);
+    showToast(`✔ Data IKM & NPS Tahun ${year} berhasil di-import.`);
+  } catch (err) {
+    console.error(err);
+    showToast("❌ Gagal membaca file Excel. Pastikan formatnya sesuai.");
+  }
+}
 
-      // pastikan year ada di dropdown
-      const years = Array.from(new Set([...listYearsInStore(), year])).sort((a,b)=>a-b);
-      buildYearOptions(years);
-      yearSelect.value = year;
-
-      refreshAllUI();
-      saveData(true);
-      showToast(`✔ Import manual berhasil: ${name}`);
-    }
-
+// =========================
+// LAPORAN OTOMATIS (IKM & NPS)
     // =========================
-    // AUTO FETCH DARI SERVER
-    // =========================
-    function excelUrlForYear(year) {
-      // cache-busting supaya update file kebaca
-      const bust = Date.now();
-      return `data-ikm-nps-${year}.xlsx?v=${bust}`;
-    }
 
-    async function fetchWorkbookFromServer(year) {
-      const url = excelUrlForYear(year);
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status} (${url})`);
-      const buf = await res.arrayBuffer();
-      const wb = new ExcelJS.Workbook();
-      await wb.xlsx.load(buf);
-      return { wb, url };
-    }
-
-    async function tryAutoLoadYears() {
-      const now = new Date().getFullYear();
-      const candidates = [now, now - 1, now - 2, now + 1]; // bisa Anda ubah sesuai kebutuhan
-
-      // kalau localStorage sudah punya data, tampilkan dulu agar tidak blank
-      const localYears = listYearsInStore();
-      if (localYears.length) {
-        buildYearOptions(localYears);
-        ensureYear(getSelectedYear());
-        refreshAllUI();
-        dataInfoEl.innerHTML = `Memuat data dari penyimpanan browser... (akan cek server juga)`;
-      } else {
-        buildYearOptions(candidates);
-        dataInfoEl.innerHTML = `Memuat data dari server...`;
-      }
-
-      // cek server: cari file yang ada
-      const foundYears = [];
-      for (const y of candidates) {
-        try {
-          const { wb, url } = await fetchWorkbookFromServer(y);
-          await parseWorkbookToStore(wb, y, url.replace(/\?v=\d+/, ""));
-          foundYears.push(y);
-        } catch (_) {
-          // diamkan
-        }
-      }
-
-      if (foundYears.length) {
-        const years = Array.from(new Set([...listYearsInStore(), ...foundYears])).sort((a,b)=>a-b);
-        buildYearOptions(years);
-        yearSelect.value = Math.max(...years);
-        refreshAllUI();
-        saveData(true);
-        showToast("✔ Data berhasil dimuat otomatis dari server.");
-      } else {
-        // tidak ada file excel di server
-        if (!listYearsInStore().length) {
-          dataInfoEl.innerHTML = `Tidak ditemukan file <code>data-ikm-nps-YYYY.xlsx</code> di server. Silakan Import Excel manual.`;
-        } else {
-          dataInfoEl.innerHTML = `Tidak ada file Excel baru di server. Menampilkan data dari browser (jika ada).`;
-        }
-      }
-    }
-
-    // =========================
-    // LAPORAN & COPY
-    // =========================
     function generateReport() {
       const year = getSelectedYear();
       ensureYear(year);
@@ -1083,6 +1288,7 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
       const npsValid = npsArr.filter(v => typeof v === "number");
 
       let text = "";
+
       text += `Ringkasan IKM dan Net Promoter Score (NPS) Balai Besar Tekstil Tahun ${year}\n\n`;
       text += `Periode yang dievaluasi: ${quarterLabel(qIndex)} ${year}.\n\n`;
 
@@ -1096,9 +1302,17 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
 
       if (detail && (detail.highestName || detail.lowestName)) {
         text += `   - Unsur IKM tertinggi: ${detail.highestName || "-"} `;
-        text += (typeof detail.highestValue === "number") ? `dengan skor ${detail.highestValue.toFixed(2)}.\n` : `\n`;
+        if (typeof detail.highestValue === "number") {
+          text += `dengan skor ${detail.highestValue.toFixed(2)}.\n`;
+        } else {
+          text += `\n`;
+        }
         text += `   - Unsur IKM terendah: ${detail.lowestName || "-"} `;
-        text += (typeof detail.lowestValue === "number") ? `dengan skor ${detail.lowestValue.toFixed(2)}.\n` : `\n`;
+        if (typeof detail.lowestValue === "number") {
+          text += `dengan skor ${detail.lowestValue.toFixed(2)}.\n`;
+        } else {
+          text += `\n`;
+        }
       }
 
       if (ikmValid.length > 0) {
@@ -1119,18 +1333,22 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
       if (npsValid.length > 0) {
         const avgNps = npsValid.reduce((a, b) => a + b, 0) / npsValid.length;
         text += `   - Rata-rata NPS tahun ${year}: ${avgNps.toFixed(2)}%.\n`;
-        text += `   - Menurut teori NPS: NPS = (%Promoter - %Detractor). Semakin tinggi nilai, semakin dominan Promoter yang loyal dan cenderung merekomendasikan.\n`;
+        text += `   - Menurut teori Net Promoter Score, nilai ini menggambarkan selisih antara persentase Promoter (skor 9–10) dan Detractor (skor 0–6). Semakin tinggi nilai NPS, semakin dominan Promoter yang loyal dan cenderung melakukan rekomendasi ulang.\n`;
       } else {
         text += `   - Belum cukup data untuk menghitung rata-rata NPS tahun ${year}.\n`;
       }
 
       text += `\n3. Implikasi Teoritis NPS\n`;
-      text += `   - Promoter (9–10), Pasif (7–8), Detractor (0–6).\n`;
-      text += `   - Nilai >70% umumnya world class, 30–70% baik, 0–30% perlu perbaikan, negatif berarti Detractor lebih dominan.\n`;
+      text += `   - Dalam teori Net Promoter Score, responden dibagi menjadi tiga kelompok:\n`;
+      text += `     • Promoter (skor 9–10): pelanggan sangat puas dan cenderung aktif merekomendasikan layanan.\n`;
+      text += `     • Pasif (skor 7–8): pelanggan cukup puas namun mudah berpindah ke penyedia layanan lain.\n`;
+      text += `     • Detractor (skor 0–6): pelanggan tidak puas dan berpotensi menyebarkan pengalaman negatif.\n`;
+      text += `   - NPS dihitung sebagai: (% Promoter – % Detractor). Nilai >70% umumnya dikategorikan sebagai kelas dunia (world class), 30–70% sebagai baik, 0–30% sebagai perlu perbaikan, dan nilai negatif mengindikasikan Detractor lebih banyak daripada Promoter.\n`;
 
       text += `\n4. Rekomendasi Singkat\n`;
-      text += `   - Prioritaskan perbaikan pada unsur IKM terendah dan replikasi praktik baik pada unsur tertinggi.\n`;
-      text += `   - Untuk NPS, petakan penyebab Detractor dan lakukan perbaikan berbasis akar masalah.\n`;
+      text += `   - Fokuskan upaya perbaikan pada unsur IKM yang konsisten menjadi terendah. Unsur tersebut perlu menjadi prioritas intervensi, misalnya penyederhanaan prosedur, peningkatan kecepatan layanan, atau perbaikan alur informasi.\n`;
+      text += `   - Pertahankan dan skalakan praktik baik pada unsur IKM tertinggi, seperti perilaku petugas, agar tetap menjadi keunggulan kompetitif dan citra positif layanan.\n`;
+      text += `   - Untuk NPS, lakukan pemetaan lebih lanjut terhadap kelompok Detractor dan alasan ketidakpuasan, sehingga program perbaikan dapat dirancang lebih terarah (peningkatan komunikasi, standar layanan, maupun fasilitas pendukung).\n`;
 
       reportTextEl.textContent = text;
     }
@@ -1151,36 +1369,31 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
     }
 
     // =========================
-    // INIT
+    // INIT EVENT
     // =========================
-    document.addEventListener("DOMContentLoaded", async () => {
+
+    document.addEventListener("DOMContentLoaded", () => {
       dataStore = loadData() || {};
+      buildYearOptions();
+      ensureYear(getSelectedYear());
+      refreshAllUI();
 
-      // auto load dari server agar device lain tetap ada data
-      await tryAutoLoadYears();
+// Jika halaman sudah di-host (GitHub Pages/hosting lain), data lokal dari file:// tidak terbawa.
+// Solusi: muat otomatis dari file Excel yang ikut di-upload ke server (jika tersedia).
+const yearsExisting = listYearsInStore();
+if (yearsExisting.length === 0) {
+  autoLoadFromServer().then((ok) => {
+    if (!ok) {
+      dataInfoEl.innerHTML =
+        'Belum ada data yang dimuat. ' +
+        'Klik <b>Muat dari Server</b> jika file Excel sudah ada di folder website, ' +
+        'atau klik <b>Import Excel</b> untuk upload manual.';
+    }
+  });
+}
 
-      yearSelect.addEventListener("change", async () => {
+      yearSelect.addEventListener("change", () => {
         ensureYear(getSelectedYear());
-
-        // jika tahun dipilih belum ada datanya, coba fetch dari server
-        const y = getSelectedYear();
-        const hasAny = dataStore[y] && (
-          dataStore[y].ikm.some(v => typeof v === "number") ||
-          dataStore[y].nps.some(v => typeof v === "number")
-        );
-
-        if (!hasAny) {
-          try {
-            dataInfoEl.innerHTML = `Mengambil data dari server untuk Tahun <b>${y}</b>...`;
-            const { wb, url } = await fetchWorkbookFromServer(y);
-            await parseWorkbookToStore(wb, y, url.replace(/\?v=\d+/, ""));
-            saveData(true);
-            showToast(`✔ Tahun ${y} dimuat dari server.`);
-          } catch (e) {
-            dataInfoEl.innerHTML = `Tidak ditemukan file <code>data-ikm-nps-${y}.xlsx</code> di server. Silakan Import manual.`;
-          }
-        }
-
         refreshAllUI();
       });
 
@@ -1192,33 +1405,39 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
         excelInput.click();
       });
 
-      excelInput.addEventListener("change", async (e) => {
+btnLoadFromServer.addEventListener("click", async () => {
+  const ok = await autoLoadFromServer();
+  if (!ok) {
+    showToast("⚠ Tidak menemukan file Excel di server. Pastikan file sudah di-upload ke folder yang sama.");
+  } else {
+    showToast("✔ Data berhasil dimuat dari server.");
+  }
+});
+
+      excelInput.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (file) {
-          try {
-            await importExcelFile(file);
-            refreshAllUI();
-          } catch (err) {
-            console.error(err);
-            showToast("❌ Gagal membaca file Excel. Pastikan format sesuai.");
-          }
+          importExcelFile(file);
         }
       });
 
       btnSave.addEventListener("click", () => {
-        saveData(false);
+        saveData();
       });
 
       btnResetYear.addEventListener("click", () => {
         const year = getSelectedYear();
         if (confirm(`Reset seluruh data IKM & NPS untuk Tahun ${year}?`)) {
           delete dataStore[year];
-          saveData(true);
-
           const years = listYearsInStore();
-          buildYearOptions(years.length ? years : [new Date().getFullYear()]);
+          if (years.length === 0) {
+            const nowY = new Date().getFullYear();
+            ensureYear(nowY);
+          }
+          buildYearOptions();
           ensureYear(getSelectedYear());
           refreshAllUI();
+          saveData();
           showToast("✔ Data tahun dipulihkan ke kondisi awal.");
         }
       });
@@ -1227,5 +1446,6 @@ Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarka
       btnCopyReport.addEventListener("click", copyReportToClipboard);
     });
   </script>
+
 </body>
 </html>
