@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard IKM & NPS - Balai Besar Tekstil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- ExcelJS untuk import Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+  <style>
+    :root {
+      --bg: #020b1c;
+      --bg-soft: #07162b;
+      --primary: #00a6c7; /* teal BLU */
+      --primary-dark: #00385c; /* navy / dark blue BBT */
+      --primary-soft: #04486f;
+      --accent-orange: #f9a826;
+      --accent-green: #8cc63f;
+      --danger: #e53935;
+      --text-main: #f4f8ff;
+      --text-muted: #9fb3d1;
+      --card-bg: #07162b;
+      --card-border: rgba(0, 255, 255, 0.18);
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.12) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(0, 168, 255, 0.12) 0, transparent 55%),
+        radial-gradient(circle at 50% 100%, rgba(0, 128, 255, 0.15) 0, transparent 55%),
+        linear-gradient(135deg, #000814, #001935);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      max-width: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 12px 12px 32px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header.app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.25) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(0, 168, 255, 0.25) 0, transparent 55%),
+        linear-gradient(135deg, #001a33, #004f6b);
+      box-shadow: var(--shadow-soft);
+      color: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .logo-group-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.15) 0, transparent 55%);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
+
+    .logo-bbt {
+      height: 52px;
+      max-width: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.4));
+    }
+
+    .logo-issc {
+      height: 40px;
+      max-width: 180px;
+      object-fit: contain;
+      opacity: 0.95;
+    }
+
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .header-text h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .header-text p {
+      margin: 0;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .logo-blu {
+      height: 52px;
+      width: 52px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #ffffff;
+      padding: 4px;
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.55);
+    }
+
+    .selector-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.37);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
+    }
+
+    .selector-group label {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .selector-group select {
+      border: none;
+      background: rgba(0, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      outline: none;
+      appearance: none;
+    }
+
+    main {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+    }
+
+    .card {
+      background: radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.14) 0, transparent 40%), var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 16px;
+      border: 1px solid var(--card-border);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 1rem;
+      color: #e9f4ff;
+    }
+
+    .card-header span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 255, 0.45);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      background: rgba(2, 20, 40, 0.85);
+      color: #e6f4ff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00c0ff, #0089a8);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 0 14px rgba(0, 255, 255, 0.5);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+      filter: brightness(1.08);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+      filter: brightness(0.95);
+    }
+
+    .btn-icon { font-size: 1rem; }
+
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 14px;
+      background: radial-gradient(circle at 0 0, rgba(0, 255, 255, 0.4) 0, transparent 40%), rgba(0, 56, 86, 0.98);
+      color: #ffffff;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow-soft);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(6px);
+      transition: all 0.2s ease;
+      z-index: 30;
+      border: 1px solid rgba(0, 255, 255, 0.6);
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .summary-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .summary-card {
+      background: radial-gradient(circle at 0 0, rgba(0, 255, 255, 0.12) 0, transparent 45%), #020b1c;
+      border-radius: 14px;
+      padding: 8px 10px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .summary-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .summary-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #e9f4ff;
+    }
+
+    .summary-sub {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .ikm-nps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .ikm-nps-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .ikm-nps-metric {
+      background: rgba(2, 20, 40, 0.92);
+      border-radius: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 255, 255, 0.22);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ikm-nps-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .ikm-nps-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .ikm-nps-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: rgba(0, 166, 199, 0.12);
+      border: 1px solid rgba(0, 166, 199, 0.7);
+      color: #e6f4ff;
+      width: fit-content;
+      margin-top: 4px;
+    }
+
+    .ikm-nps-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+    }
+
+    .ikm-detail {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .chart-card {
+      background: radial-gradient(circle at 0 0, rgba(0, 255, 255, 0.06) 0, transparent 50%), #020b1c;
+      border-radius: 14px;
+      padding: 8px 10px;
+      border: 1px dashed rgba(0, 255, 255, 0.35);
+      margin-bottom: 10px;
+    }
+
+    .chart-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #e0f7ff;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chart-title span.info {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 260px;
+    }
+
+    @media (min-width: 1200px) and (min-height: 800px) {
+      .chart-container { height: 300px; }
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 980px) {
+      .bottom-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .report-area {
+      min-height: 220px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      padding: 10px;
+      background: rgba(2, 20, 40, 0.9);
+      font-size: 0.85rem;
+      white-space: pre-line;
+    }
+
+    .report-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 980px) {
+      header.app-header { flex-direction: column; align-items: flex-start; }
+      .header-left { width: 100%; }
+      .logo-bbt { height: 44px; }
+      .logo-issc { height: 32px; }
+      .logo-blu { height: 46px; width: 46px; }
+    }
+
+    @media (max-width: 640px) {
+      .header-text h1 { font-size: 1.05rem; }
+      .header-text p { font-size: 0.8rem; }
+      .selector-group label { display: none; }
+      .selector-group select { font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-group-main">
+          <img src="logo-bbt.png" alt="Logo Balai Besar Tekstil" class="logo-bbt" />
+          <img src="logo-issc.png" alt="Logo Industrial Services & Solution Center" class="logo-issc" />
+        </div>
+        <div class="header-text">
+          <h1>DASHBOARD IKM &amp; NPS</h1>
+          <p>Balai Besar Tekstil &mdash; Indeks Kepuasan Masyarakat &amp; Net Promoter Score per Triwulan.</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="selector-group">
+          <label for="yearSelect">Tahun</label>
+          <select id="yearSelect"></select>
+        </div>
+        <div class="selector-group">
+          <label for="quarterSelect">Triwulan</label>
+          <select id="quarterSelect">
+            <option value="q1">Triwulan 1 (Jan–Mar)</option>
+            <option value="q2">Triwulan 2 (Apr–Jun)</option>
+            <option value="q3">Triwulan 3 (Jul–Sep)</option>
+            <option value="q4">Triwulan 4 (Okt–Des)</option>
+          </select>
+        </div>
+        <img src="Logo BLU Speed.png" alt="Logo BLU Speed" class="logo-blu" />
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2>Data IKM &amp; NPS per Triwulan</h2>
+            <span>
+              Input data dari file Excel <code>data-ikm-nps-YYYY.xlsx</code>
+              (sheet <code>ikm</code> dan <code>nps</code>, baris 2–5 untuk Triwulan 1–4).
+            </span>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-primary" id="btnImportExcel">
+            <span class="btn-icon">📥</span> Import Excel
+          </button>
+          <button class="btn" id="btnSave">
+            <span class="btn-icon">💾</span> Simpan ke Browser
+          </button>
+          <button class="btn" id="btnResetYear">
+            <span class="btn-icon">🧹</span> Reset Tahun Terpilih
+          </button>
+        </div>
+        <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;" />
+        <div class="helper-text" id="dataInfo">
+          Memuat data dari server... (jika tidak ada, silakan Import Excel manual)
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2>Ringkasan IKM &amp; NPS</h2>
+            <span id="summaryPeriodLabel"></span>
+          </div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-label">Rata-Rata IKM Tahun Ini (Skala 1–4)</div>
+            <div class="summary-value" id="avgIkmValue">-</div>
+            <div class="summary-sub" id="avgIkmSub">Menunggu data IKM diimpor.</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Rekomendasi Unsur IKM</div>
+            <div class="summary-value" id="ikmRecoTitle">-</div>
+            <div class="summary-sub" id="ikmRecoText">
+              Rekomendasi otomatis akan muncul berdasarkan unsur IKM tertinggi dan terendah pada triwulan terpilih.
+            </div>
+          </div>
+        </div>
+
+        <div class="ikm-nps-grid">
+          <div class="ikm-nps-metric">
+            <div class="ikm-nps-title">IKM Triwulan Terpilih (1–4)</div>
+            <div class="ikm-nps-value" id="ikmValue">-</div>
+            <div class="ikm-nps-badge">
+              <span class="ikm-nps-badge-dot"></span>
+              <span id="ikmLabel">Belum ada data IKM untuk triwulan ini.</span>
+            </div>
+            <div class="ikm-detail">
+              Unsur IKM tertinggi: <b id="ikmHighestName">-</b>
+              (<span id="ikmHighestValue">-</span>)<br />
+              Unsur IKM terendah: <b id="ikmLowestName">-</b>
+              (<span id="ikmLowestValue">-</span>)
+            </div>
+          </div>
+          <div class="ikm-nps-metric">
+            <div class="ikm-nps-title">NPS Triwulan Terpilih (0–100%)</div>
+            <div class="ikm-nps-value" id="npsValue">-</div>
+            <div class="ikm-nps-badge" style="border-color: var(--accent-orange);background: rgba(249,168,38,0.12);">
+              <span class="ikm-nps-badge-dot" style="background: var(--accent-orange);"></span>
+              <span id="npsLabel">Belum ada data NPS untuk triwulan ini.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bottom-grid">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>Tren IKM &amp; NPS per Triwulan</h2>
+              <span>Grafik terpisah IKM dan NPS untuk satu tahun.</span>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">
+              <span>Grafik IKM (Skala 1–4)</span>
+              <span class="info" id="chartInfoIkm"></span>
+            </div>
+            <div class="chart-container">
+              <canvas id="ikmChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">
+              <span>Grafik NPS (0–100%)</span>
+              <span class="info" id="chartInfoNps"></span>
+            </div>
+            <div class="chart-container">
+              <canvas id="npsChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>Ringkasan Naratif Otomatis</h2>
+              <span>Laporan singkat IKM &amp; NPS berdasarkan teori Net Promoter Score.</span>
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-primary" id="btnGenerateReport">
+              <span class="btn-icon">✨</span> Generate Laporan
+            </button>
+          </div>
+          <div class="report-area" id="reportText">
+Tekan tombol <b>Generate Laporan</b> untuk membuat ringkasan otomatis berdasarkan data IKM &amp; NPS.
+          </div>
+          <div class="report-toolbar">
+            <button class="btn" id="btnCopyReport">
+              <span class="btn-icon">📋</span> Salin Teks
+            </button>
+          </div>
+          <div class="helper-text">
+            Laporan ini dapat langsung disalin ke dokumen Word atau bahan paparan kinerja BLU.
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "ikm_nps_dashboard_data_v4_serverfetch";
+
+    const yearSelect       = document.getElementById("yearSelect");
+    const quarterSelect    = document.getElementById("quarterSelect");
+    const btnImportExcel   = document.getElementById("btnImportExcel");
+    const excelInput       = document.getElementById("excelInput");
+    const btnSave          = document.getElementById("btnSave");
+    const btnResetYear     = document.getElementById("btnResetYear");
+    const dataInfoEl       = document.getElementById("dataInfo");
+
+    const summaryPeriodLabel = document.getElementById("summaryPeriodLabel");
+    const avgIkmValueEl      = document.getElementById("avgIkmValue");
+    const avgIkmSubEl        = document.getElementById("avgIkmSub");
+
+    const ikmRecoTitleEl     = document.getElementById("ikmRecoTitle");
+    const ikmRecoTextEl      = document.getElementById("ikmRecoText");
+
+    const ikmValueEl         = document.getElementById("ikmValue");
+    const ikmLabelEl         = document.getElementById("ikmLabel");
+    const ikmHighestNameEl   = document.getElementById("ikmHighestName");
+    const ikmHighestValueEl  = document.getElementById("ikmHighestValue");
+    const ikmLowestNameEl    = document.getElementById("ikmLowestName");
+    const ikmLowestValueEl   = document.getElementById("ikmLowestValue");
+
+    const npsValueEl         = document.getElementById("npsValue");
+    const npsLabelEl         = document.getElementById("npsLabel");
+
+    const chartInfoIkmEl = document.getElementById("chartInfoIkm");
+    const chartInfoNpsEl = document.getElementById("chartInfoNps");
+    const reportTextEl   = document.getElementById("reportText");
+    const btnGenerateReport = document.getElementById("btnGenerateReport");
+    const btnCopyReport     = document.getElementById("btnCopyReport");
+
+    const toastEl        = document.getElementById("toast");
+    const ikmChartCanvas = document.getElementById("ikmChart");
+    const npsChartCanvas = document.getElementById("npsChart");
+
+    let dataStore = {};
+    let chartIKM  = null;
+    let chartNPS  = null;
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add("show");
+      setTimeout(() => toastEl.classList.remove("show"), 2200);
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+      try {
+        const parsed = JSON.parse(raw);
+        return typeof parsed === "object" && parsed !== null ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveData(silent=false) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataStore));
+      if (!silent) showToast("✔ Data IKM & NPS tersimpan di browser.");
+    }
+
+    function listYearsInStore() {
+      return Object.keys(dataStore)
+        .map(y => parseInt(y, 10))
+        .filter(y => !isNaN(y))
+        .sort((a, b) => a - b);
+    }
+
+    function ensureYear(year) {
+      if (!dataStore[year]) {
+        dataStore[year] = {
+          ikm: [null, null, null, null],
+          nps: [null, null, null, null],
+          ikmDetail: [
+            { highestValue: null, lowestValue: null, highestName: null, lowestName: null },
+            { highestValue: null, lowestValue: null, highestName: null, lowestName: null },
+            { highestValue: null, lowestValue: null, highestName: null, lowestName: null },
+            { highestValue: null, lowestValue: null, highestName: null, lowestName: null }
+          ],
+          _source: null,
+          _loadedAt: null
+        };
+      }
+    }
+
+    function buildYearOptions(preferredYears) {
+      const nowYear = new Date().getFullYear();
+      const years = preferredYears?.length ? preferredYears : listYearsInStore();
+
+      yearSelect.innerHTML = "";
+      const baseYears = (years.length ? years : [nowYear]).slice().sort((a,b)=>a-b);
+
+      baseYears.forEach(y => {
+        const opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        yearSelect.appendChild(opt);
+      });
+
+      yearSelect.value = (years.length ? Math.max(...years) : nowYear);
+    }
+
+    function getSelectedYear() {
+      return parseInt(yearSelect.value, 10);
+    }
+
+    function getQuarterIndex() {
+      const map = { q1: 0, q2: 1, q3: 2, q4: 3 };
+      return map[quarterSelect.value] ?? 0;
+    }
+
+    function quarterLabel(qIndex) {
+      return [
+        "Triwulan 1 (Jan–Mar)",
+        "Triwulan 2 (Apr–Jun)",
+        "Triwulan 3 (Jul–Sep)",
+        "Triwulan 4 (Okt–Des)"
+      ][qIndex] || "";
+    }
+
+    // Parsing angka lokal (Indonesia), termasuk koma & persen
+    // - Jika Excel persen disimpan sebagai number 0.8213 => jadi 82.13
+    // - Jika string "82,13%" => jadi 82.13
+    function parseLocaleNumber(raw, isPercent = false) {
+      if (raw === null || raw === undefined) return null;
+
+      if (typeof raw === "number") {
+        return isPercent ? raw * 100 : raw;
+      }
+
+      let s = String(raw).trim().replace(/\s+/g, "");
+      if (isPercent) s = s.replace("%", "");
+
+      if (s.includes(",") && s.includes(".")) {
+        s = s.replace(/\./g, "").replace(",", ".");
+      } else if (s.includes(",")) {
+        s = s.replace(",", ".");
+      }
+
+      const val = parseFloat(s);
+      if (isNaN(val)) return null;
+      return val; // untuk persen: 0–100 (bukan 0–1)
+    }
+
+    function classifyIKM(value) {
+      if (value == null || isNaN(value)) return "Belum ada data IKM.";
+      if (value >= 3.26) return "Mutu Pelayanan: Sangat Baik (3,26–4,00).";
+      if (value >= 2.51) return "Mutu Pelayanan: Baik (2,51–3,25).";
+      if (value >= 1.76) return "Mutu Pelayanan: Cukup (1,76–2,50).";
+      if (value >= 1.00) return "Mutu Pelayanan: Kurang (1,00–1,75).";
+      return "Skor di luar rentang skala 1–4.";
+    }
+
+    function classifyNPS(value) {
+      if (value == null || isNaN(value)) return "Belum ada data NPS.";
+      if (value > 70) return "Kategori: World Class. Persentase Promoter jauh lebih besar daripada Detractor.";
+      if (value > 30) return "Kategori: Baik. Proporsi Promoter cukup tinggi, namun masih ada ruang perbaikan.";
+      if (value >= 0) return "Kategori: Perlu Perbaikan. Promoter dan Detractor relatif seimbang atau sedikit lebih banyak Promoter.";
+      return "Kategori: Negatif. Detractor lebih banyak dari Promoter, perlu tindakan perbaikan serius.";
+    }
+
+    function buildIkmRecommendation(detail) {
+      const { highestName, highestValue, lowestName, lowestValue } = detail || {};
+      let title = "-";
+      let text  = "Belum ada data unsur IKM tertinggi dan terendah untuk triwulan ini.";
+
+      if (lowestName || highestName) {
+        title = "Fokus: Perbaiki unsur terendah, pertahankan unsur tertinggi";
+
+        const highestPart = highestName
+          ? `Unsur IKM dengan skor tertinggi adalah <b>${highestName}</b>` +
+            (typeof highestValue === "number" ? ` (skor ${highestValue.toFixed(2)}).` : ".")
+          : "Belum ada data unsur IKM tertinggi.";
+
+        const lowestPart = lowestName
+          ? `Unsur dengan skor terendah adalah <b>${lowestName}</b>` +
+            (typeof lowestValue === "number" ? ` (skor ${lowestValue.toFixed(2)}).` : ".")
+          : "Belum ada data unsur IKM terendah.";
+
+        text  = highestPart + " Unsur ini dapat dijadikan best practice yang perlu dipertahankan dan direplikasi pada aspek lain. ";
+        text += lowestPart + " Unsur ini perlu menjadi prioritas program perbaikan, misalnya melalui penyederhanaan prosedur, peningkatan kecepatan layanan, atau penguatan komunikasi dengan pengguna layanan.";
+      }
+      return { title, text };
+    }
+
+    function updateSummaryUI() {
+      const year = getSelectedYear();
+      ensureYear(year);
+
+      const ikmArr = dataStore[year].ikm;
+      const npsArr = dataStore[year].nps;
+      const ikmDetail = dataStore[year].ikmDetail;
+
+      const ikmValid = ikmArr.filter(v => typeof v === "number");
+      if (ikmValid.length > 0) {
+        const avgIkm = ikmValid.reduce((a, b) => a + b, 0) / ikmValid.length;
+        avgIkmValueEl.textContent = avgIkm.toFixed(2);
+        avgIkmSubEl.textContent = classifyIKM(avgIkm);
+      } else {
+        avgIkmValueEl.textContent = "-";
+        avgIkmSubEl.textContent = "Belum ada data IKM yang lengkap untuk tahun ini.";
+      }
+
+      const qIndex = getQuarterIndex();
+      const ikmVal = ikmArr[qIndex];
+      const npsVal = npsArr[qIndex];
+      const detail = ikmDetail[qIndex] || {};
+
+      ikmValueEl.textContent = (typeof ikmVal === "number") ? ikmVal.toFixed(2) : "-";
+      ikmLabelEl.textContent = classifyIKM(ikmVal);
+
+      ikmHighestNameEl.textContent = detail.highestName || "-";
+      ikmHighestValueEl.textContent = (typeof detail.highestValue === "number") ? detail.highestValue.toFixed(2) : "-";
+
+      ikmLowestNameEl.textContent = detail.lowestName || "-";
+      ikmLowestValueEl.textContent = (typeof detail.lowestValue === "number") ? detail.lowestValue.toFixed(2) : "-";
+
+      npsValueEl.textContent = (typeof npsVal === "number") ? npsVal.toFixed(2) + " %" : "-";
+      npsLabelEl.textContent = classifyNPS(npsVal);
+
+      const reco = buildIkmRecommendation(detail);
+      ikmRecoTitleEl.textContent = reco.title;
+      ikmRecoTextEl.innerHTML = reco.text;
+
+      summaryPeriodLabel.innerHTML = `Tahun <b>${year}</b> &mdash; ${quarterLabel(qIndex)}`;
+
+      const src = dataStore[year]._source ? `Sumber: <b>${dataStore[year]._source}</b>` : "Sumber: -";
+      dataInfoEl.innerHTML = `Data IKM &amp; NPS Tahun <b>${year}</b> siap. ${src}`;
+    }
+
+    function updateCharts() {
+      const year = getSelectedYear();
+      ensureYear(year);
+
+      const labels = ["TW1", "TW2", "TW3", "TW4"];
+      const ikmSeries = dataStore[year].ikm.map(v => (typeof v === "number" ? v : null));
+      const npsSeries = dataStore[year].nps.map(v => (typeof v === "number" ? v : null));
+
+      const ctxIkm = ikmChartCanvas.getContext("2d");
+      if (chartIKM) chartIKM.destroy();
+      chartIKM = new Chart(ctxIkm, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "IKM",
+            data: ikmSeries,
+            borderColor: "rgba(0,166,199,1)",
+            backgroundColor: "rgba(0,166,199,0.2)",
+            tension: 0.3,
+            spanGaps: true,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: "#e6f4ff", font: { size: 10 } } } },
+          scales: {
+            x: { ticks: { color: "#9fb3d1", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.08)" } },
+            y: { min: 1, max: 4, ticks: { stepSize: 0.5, color: "#9fb3d1", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.08)" } }
+          }
+        }
+      });
+      chartInfoIkmEl.textContent = `Tahun ${year}, IKM skala 1–4 per Triwulan.`;
+
+      const ctxNps = npsChartCanvas.getContext("2d");
+      if (chartNPS) chartNPS.destroy();
+      chartNPS = new Chart(ctxNps, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "NPS",
+            data: npsSeries,
+            borderColor: "rgba(249,168,38,1)",
+            backgroundColor: "rgba(249,168,38,0.2)",
+            tension: 0.3,
+            spanGaps: true,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: "#e6f4ff", font: { size: 10 } } } },
+          scales: {
+            x: { ticks: { color: "#9fb3d1", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.08)" } },
+            y: { min: 0, max: 100, ticks: { stepSize: 10, color: "#9fb3d1", font: { size: 10 }, callback: (v) => v + " %" }, grid: { color: "rgba(255,255,255,0.08)" } }
+          }
+        }
+      });
+      chartInfoNpsEl.textContent = `Tahun ${year}, Net Promoter Score (0–100%) per Triwulan.`;
+    }
+
+    function refreshAllUI() {
+      updateSummaryUI();
+      updateCharts();
+    }
+
+    // =========================
+    // PARSE WORKBOOK (dipakai import manual & fetch server)
+    // =========================
+    async function parseWorkbookToStore(workbook, year, sourceLabel) {
+      ensureYear(year);
+
+      const sheetIKM = workbook.getWorksheet("ikm");
+      const sheetNPS = workbook.getWorksheet("nps");
+
+      if (!sheetIKM && !sheetNPS) {
+        throw new Error("Sheet 'ikm' atau 'nps' tidak ditemukan.");
+      }
+
+      if (sheetIKM) {
+        for (let i = 0; i < 4; i++) {
+          const rowIdx = 2 + i;
+          const row = sheetIKM.getRow(rowIdx);
+          const ikmValRaw   = row.getCell(2).value;
+          const highestRaw  = row.getCell(3).value;
+          const lowestRaw   = row.getCell(4).value;
+          const highestName = row.getCell(5).value;
+          const lowestName  = row.getCell(6).value;
+
+          const ikmVal      = parseLocaleNumber(ikmValRaw, false);
+          const highestVal  = parseLocaleNumber(highestRaw, false);
+          const lowestVal   = parseLocaleNumber(lowestRaw, false);
+
+          if (ikmVal !== null) dataStore[year].ikm[i] = ikmVal;
+          dataStore[year].ikmDetail[i] = {
+            highestValue: highestVal,
+            lowestValue: lowestVal,
+            highestName: highestName || null,
+            lowestName: lowestName || null
+          };
+        }
+      }
+
+      if (sheetNPS) {
+        for (let i = 0; i < 4; i++) {
+          const rowIdx = 2 + i;
+          const row = sheetNPS.getRow(rowIdx);
+          const npsRaw = row.getCell(2).value;
+          const npsVal = parseLocaleNumber(npsRaw, true); // selalu 0–100
+          if (npsVal !== null) dataStore[year].nps[i] = npsVal;
+        }
+      }
+
+      dataStore[year]._source = sourceLabel || "unknown";
+      dataStore[year]._loadedAt = new Date().toISOString();
+    }
+
+    // =========================
+    // IMPORT MANUAL (file picker)
+    // =========================
+    async function importExcelFile(file) {
+      const workbook = new ExcelJS.Workbook();
+      const buffer = await file.arrayBuffer();
+      await workbook.xlsx.load(buffer);
+
+      const name = file.name || "";
+      const matchYear = name.match(/(\d{4})/);
+      const year = matchYear ? parseInt(matchYear[1], 10) : new Date().getFullYear();
+
+      await parseWorkbookToStore(workbook, year, name);
+
+      // pastikan year ada di dropdown
+      const years = Array.from(new Set([...listYearsInStore(), year])).sort((a,b)=>a-b);
+      buildYearOptions(years);
+      yearSelect.value = year;
+
+      refreshAllUI();
+      saveData(true);
+      showToast(`✔ Import manual berhasil: ${name}`);
+    }
+
+    // =========================
+    // AUTO FETCH DARI SERVER
+    // =========================
+    function excelUrlForYear(year) {
+      // cache-busting supaya update file kebaca
+      const bust = Date.now();
+      return `data-ikm-nps-${year}.xlsx?v=${bust}`;
+    }
+
+    async function fetchWorkbookFromServer(year) {
+      const url = excelUrlForYear(year);
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status} (${url})`);
+      const buf = await res.arrayBuffer();
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(buf);
+      return { wb, url };
+    }
+
+    async function tryAutoLoadYears() {
+      const now = new Date().getFullYear();
+      const candidates = [now, now - 1, now - 2, now + 1]; // bisa Anda ubah sesuai kebutuhan
+
+      // kalau localStorage sudah punya data, tampilkan dulu agar tidak blank
+      const localYears = listYearsInStore();
+      if (localYears.length) {
+        buildYearOptions(localYears);
+        ensureYear(getSelectedYear());
+        refreshAllUI();
+        dataInfoEl.innerHTML = `Memuat data dari penyimpanan browser... (akan cek server juga)`;
+      } else {
+        buildYearOptions(candidates);
+        dataInfoEl.innerHTML = `Memuat data dari server...`;
+      }
+
+      // cek server: cari file yang ada
+      const foundYears = [];
+      for (const y of candidates) {
+        try {
+          const { wb, url } = await fetchWorkbookFromServer(y);
+          await parseWorkbookToStore(wb, y, url.replace(/\?v=\d+/, ""));
+          foundYears.push(y);
+        } catch (_) {
+          // diamkan
+        }
+      }
+
+      if (foundYears.length) {
+        const years = Array.from(new Set([...listYearsInStore(), ...foundYears])).sort((a,b)=>a-b);
+        buildYearOptions(years);
+        yearSelect.value = Math.max(...years);
+        refreshAllUI();
+        saveData(true);
+        showToast("✔ Data berhasil dimuat otomatis dari server.");
+      } else {
+        // tidak ada file excel di server
+        if (!listYearsInStore().length) {
+          dataInfoEl.innerHTML = `Tidak ditemukan file <code>data-ikm-nps-YYYY.xlsx</code> di server. Silakan Import Excel manual.`;
+        } else {
+          dataInfoEl.innerHTML = `Tidak ada file Excel baru di server. Menampilkan data dari browser (jika ada).`;
+        }
+      }
+    }
+
+    // =========================
+    // LAPORAN & COPY
+    // =========================
+    function generateReport() {
+      const year = getSelectedYear();
+      ensureYear(year);
+      const qIndex = getQuarterIndex();
+
+      const ikmArr = dataStore[year].ikm;
+      const npsArr = dataStore[year].nps;
+      const ikmDetail = dataStore[year].ikmDetail;
+
+      const ikmVal = ikmArr[qIndex];
+      const npsVal = npsArr[qIndex];
+      const detail = ikmDetail[qIndex] || {};
+
+      const ikmValid = ikmArr.filter(v => typeof v === "number");
+      const npsValid = npsArr.filter(v => typeof v === "number");
+
+      let text = "";
+      text += `Ringkasan IKM dan Net Promoter Score (NPS) Balai Besar Tekstil Tahun ${year}\n\n`;
+      text += `Periode yang dievaluasi: ${quarterLabel(qIndex)} ${year}.\n\n`;
+
+      text += `1. Indeks Kepuasan Masyarakat (IKM)\n`;
+      if (typeof ikmVal === "number") {
+        text += `   - Nilai IKM triwulan ini (skala 1–4): ${ikmVal.toFixed(2)}.\n`;
+        text += `   - Interpretasi mutu: ${classifyIKM(ikmVal)}\n`;
+      } else {
+        text += `   - Data IKM untuk triwulan ini belum tersedia.\n`;
+      }
+
+      if (detail && (detail.highestName || detail.lowestName)) {
+        text += `   - Unsur IKM tertinggi: ${detail.highestName || "-"} `;
+        text += (typeof detail.highestValue === "number") ? `dengan skor ${detail.highestValue.toFixed(2)}.\n` : `\n`;
+        text += `   - Unsur IKM terendah: ${detail.lowestName || "-"} `;
+        text += (typeof detail.lowestValue === "number") ? `dengan skor ${detail.lowestValue.toFixed(2)}.\n` : `\n`;
+      }
+
+      if (ikmValid.length > 0) {
+        const avgIkm = ikmValid.reduce((a, b) => a + b, 0) / ikmValid.length;
+        text += `   - Rata-rata IKM tahun ${year}: ${avgIkm.toFixed(2)} (skala 1–4).\n`;
+      } else {
+        text += `   - Belum cukup data untuk menghitung rata-rata IKM tahun ${year}.\n`;
+      }
+
+      text += `\n2. Net Promoter Score (NPS)\n`;
+      if (typeof npsVal === "number") {
+        text += `   - Nilai NPS triwulan ini: ${npsVal.toFixed(2)}%.\n`;
+        text += `   - Interpretasi kategori: ${classifyNPS(npsVal)}\n\n`;
+      } else {
+        text += `   - Data NPS untuk triwulan ini belum tersedia.\n\n`;
+      }
+
+      if (npsValid.length > 0) {
+        const avgNps = npsValid.reduce((a, b) => a + b, 0) / npsValid.length;
+        text += `   - Rata-rata NPS tahun ${year}: ${avgNps.toFixed(2)}%.\n`;
+        text += `   - Menurut teori NPS: NPS = (%Promoter - %Detractor). Semakin tinggi nilai, semakin dominan Promoter yang loyal dan cenderung merekomendasikan.\n`;
+      } else {
+        text += `   - Belum cukup data untuk menghitung rata-rata NPS tahun ${year}.\n`;
+      }
+
+      text += `\n3. Implikasi Teoritis NPS\n`;
+      text += `   - Promoter (9–10), Pasif (7–8), Detractor (0–6).\n`;
+      text += `   - Nilai >70% umumnya world class, 30–70% baik, 0–30% perlu perbaikan, negatif berarti Detractor lebih dominan.\n`;
+
+      text += `\n4. Rekomendasi Singkat\n`;
+      text += `   - Prioritaskan perbaikan pada unsur IKM terendah dan replikasi praktik baik pada unsur tertinggi.\n`;
+      text += `   - Untuk NPS, petakan penyebab Detractor dan lakukan perbaikan berbasis akar masalah.\n`;
+
+      reportTextEl.textContent = text;
+    }
+
+    function copyReportToClipboard() {
+      const text = reportTextEl.textContent || "";
+      if (!navigator.clipboard) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      } else {
+        navigator.clipboard.writeText(text).catch(() => {});
+      }
+      showToast("✔ Laporan tersalin ke clipboard.");
+    }
+
+    // =========================
+    // INIT
+    // =========================
+    document.addEventListener("DOMContentLoaded", async () => {
+      dataStore = loadData() || {};
+
+      // auto load dari server agar device lain tetap ada data
+      await tryAutoLoadYears();
+
+      yearSelect.addEventListener("change", async () => {
+        ensureYear(getSelectedYear());
+
+        // jika tahun dipilih belum ada datanya, coba fetch dari server
+        const y = getSelectedYear();
+        const hasAny = dataStore[y] && (
+          dataStore[y].ikm.some(v => typeof v === "number") ||
+          dataStore[y].nps.some(v => typeof v === "number")
+        );
+
+        if (!hasAny) {
+          try {
+            dataInfoEl.innerHTML = `Mengambil data dari server untuk Tahun <b>${y}</b>...`;
+            const { wb, url } = await fetchWorkbookFromServer(y);
+            await parseWorkbookToStore(wb, y, url.replace(/\?v=\d+/, ""));
+            saveData(true);
+            showToast(`✔ Tahun ${y} dimuat dari server.`);
+          } catch (e) {
+            dataInfoEl.innerHTML = `Tidak ditemukan file <code>data-ikm-nps-${y}.xlsx</code> di server. Silakan Import manual.`;
+          }
+        }
+
+        refreshAllUI();
+      });
+
+      quarterSelect.addEventListener("change", () => {
+        refreshAllUI();
+      });
+
+      btnImportExcel.addEventListener("click", () => {
+        excelInput.click();
+      });
+
+      excelInput.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          try {
+            await importExcelFile(file);
+            refreshAllUI();
+          } catch (err) {
+            console.error(err);
+            showToast("❌ Gagal membaca file Excel. Pastikan format sesuai.");
+          }
+        }
+      });
+
+      btnSave.addEventListener("click", () => {
+        saveData(false);
+      });
+
+      btnResetYear.addEventListener("click", () => {
+        const year = getSelectedYear();
+        if (confirm(`Reset seluruh data IKM & NPS untuk Tahun ${year}?`)) {
+          delete dataStore[year];
+          saveData(true);
+
+          const years = listYearsInStore();
+          buildYearOptions(years.length ? years : [new Date().getFullYear()]);
+          ensureYear(getSelectedYear());
+          refreshAllUI();
+          showToast("✔ Data tahun dipulihkan ke kondisi awal.");
+        }
+      });
+
+      btnGenerateReport.addEventListener("click", generateReport);
+      btnCopyReport.addEventListener("click", copyReportToClipboard);
+    });
+  </script>
+</body>
+</html>
