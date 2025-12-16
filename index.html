@@ -3,213 +3,274 @@
 <head>
   <meta charset="UTF-8" />
   <title>Portal Dashboard BLU - Balai Besar Tekstil</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    :root {
+      --bg: #020b1c;
+      --bg-soft: #07162b;
+      --primary: #00a6c7; /* teal BLU */
+      --primary-dark: #00385c; /* navy / dark blue BBT */
+      --primary-soft: #04486f;
+      --accent-orange: #f9a826;
+      --accent-green: #8cc63f;
+      --text-main: #f4f8ff;
+      --text-muted: #9fb3d1;
+      --card-bg: #07162b;
+      --card-border: rgba(0, 255, 255, 0.18);
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+    }
 
-:root{
-  --bg:#020b1c;
-  --bg-soft:#07162b;
-  --primary:#00a6c7;
-  --primary-dark:#00385c;
-  --card-bg:rgba(5,16,35,.78);
-  --card-border:rgba(0,166,199,.25);
-  --text:#e6f4ff;
-  --muted:rgba(230,244,255,.72);
-  --shadow:0 18px 40px rgba(0,0,0,.35);
-  --radius:18px;
+    * {
+      box-sizing: border-box;
+    }
 
-  /* diisi JS */
-  --app-h:100dvh;
-  --topH:220px;
-  --contentH:60dvh;
-}
+    body {
+      overflow-x: hidden;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.12) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(0, 168, 255, 0.12) 0, transparent 55%),
+        radial-gradient(circle at 50% 100%, rgba(0, 128, 255, 0.15) 0, transparent 55%),
+        linear-gradient(135deg, #000814, #001935);
+      color: var(--text-main);
+      min-height: 100dvh;
+      min-height: 100vh;
+    }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(circle at 20% 10%, rgba(0,166,199,.18), transparent 35%),
-    radial-gradient(circle at 85% 30%, rgba(249,168,38,.12), transparent 40%),
-    var(--bg);
-  overflow-x:hidden; /* cegah geser kanan-kiri di HP */
-  overflow-y:auto;
-}
+    .app-shell {
+      max-width: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 12px 12px 24px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
 
-/* Shell: default aman untuk mobile (boleh scroll halaman) */
-.app-shell{
-  width:100%;
-  max-width:1200px;
-  margin:0 auto;
-  padding:12px 12px max(18px, env(safe-area-inset-bottom));
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  min-height:var(--app-h);
-}
+    /* HEADER / TOP BAR */
+    header.app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.25) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(0, 168, 255, 0.25) 0, transparent 55%),
+        linear-gradient(135deg, #001a33, #004f6b);
+      box-shadow: var(--shadow-soft);
+      color: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
 
-/* Desktop/tablet: jadikan “panel” fixed-height, scroll hanya di konten */
-@media (min-width: 768px){
-  body{ overflow:hidden; }
-  .app-shell{ height:var(--app-h); }
-}
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
 
-.card{
-  background:var(--card-bg);
-  border:1px solid var(--card-border);
-  box-shadow:var(--shadow);
-  border-radius:var(--radius);
-  backdrop-filter: blur(10px);
-}
+    .logo-group-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.15) 0, transparent 55%);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
 
-header.app-header{
-  padding:12px 14px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-.header-left{display:flex; gap:12px; align-items:center; min-width:0}
-.logo-group-main{display:flex; gap:10px; align-items:center; flex:0 0 auto}
-.logo-bbt{height:44px; width:auto; display:block}
-.logo-issc{height:34px; width:auto; max-width:170px; display:block}
-.logo-blu{height:44px; width:44px; object-fit:contain; display:block}
+    .logo-bbt {
+      height: 52px;
+      max-width: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.4));
+    }
 
-.header-text{min-width:0}
-.header-text h1{
-  margin:0;
-  font-size:1.08rem;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  line-height:1.15;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.header-text p{
-  margin:4px 0 0 0;
-  font-size:.86rem;
-  color:var(--muted);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+    .logo-issc {
+      height: 40px;
+      max-width: 180px;
+      object-fit: contain;
+      opacity: 0.95;
+    }
 
-.menu-card{ padding:10px 12px; }
-.menu-tabs{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.menu-tab{
-  border-radius:999px;
-  padding:9px 12px;
-  font-size:.84rem;
-  border:1px solid rgba(0,255,255,.35);
-  background:rgba(2,20,40,.85);
-  color:var(--text);
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  user-select:none;
-  white-space:nowrap;
-}
-.menu-tab.active{
-  background:linear-gradient(135deg, rgba(0,166,199,.35), rgba(0,56,92,.75));
-  border-color:rgba(0,166,199,.65);
-}
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
 
-.content-card{
-  padding:6px;
-  display:flex;
-  flex-direction:column;
-  min-height:240px;
-}
+    .header-text h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
 
-/* Desktop/tablet: tinggi konten dihitung, iframe full */
-@media (min-width:768px){
-  .content-card{
-    height:var(--contentH);
-    min-height:0;
-    overflow:hidden;
-  }
-}
+    .header-text p {
+      margin: 0;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
 
-/* Mobile: biarkan tinggi alami, tapi iframe tetap min tinggi enak dilihat */
-@media (max-width: 767.98px){
-  .content-card{
-    height:auto;
-    overflow:visible;
-  }
-}
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
 
-.tab-content{
-  display:none;
-  width:100%;
-}
-.tab-content.active{display:block;}
+    .logo-blu {
+      height: 52px;
+      width: 52px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #ffffff;
+      padding: 4px;
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.55);
+    }
 
-.tab-frame{
-  width:100%;
-  border:0;
-  border-radius:14px;
-  background:#000814;
-  display:block;
+    @media (max-width: 980px) {
+      header.app-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-  /* Default: “cukup tinggi” di HP portrait */
-  min-height:65vh;
-}
+      .header-left {
+        width: 100%;
+      }
 
-/* Desktop/tablet: iframe ikut tinggi kontainer */
-@media (min-width:768px){
-  .tab-content, .tab-frame{ height:100%; min-height:0; }
-}
+      .logo-bbt { height: 44px; }
+      .logo-issc { height: 32px; }
+      .logo-blu { height: 46px; width: 46px; }
+    }
 
-/* HP portrait kecil: ringkas header, tab jadi full width */
-@media (max-width: 420px){
-  header.app-header{ padding:10px 10px; }
-  .logo-bbt{ height:38px; }
-  .logo-issc{ height:28px; max-width:150px; }
-  .logo-blu{ height:38px; width:38px; }
-  .header-text h1{ font-size:.98rem; letter-spacing:.06em; }
-  .menu-card{ padding:9px 10px; }
-  .menu-tabs{ gap:8px; }
-  .menu-tab{ width:100%; justify-content:center; }
-  .tab-frame{ min-height:68vh; }
-}
+    @media (max-width: 640px) {
+      .header-text h1 {
+        font-size: 1.05rem;
+      }
 
-/* HP landscape (tinggi pendek): paksa menu 1 baris (scroll horizontal), 
-   dan pastikan iframe tetap muncul (min-height berbasis viewport) */
-@media (max-height: 430px) and (orientation: landscape){
-  header.app-header{ padding:8px 10px; }
-  .header-text p{ display:none; } /* hemat tinggi */
-  .menu-tabs{
-    flex-wrap:nowrap;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:4px;
-  }
-  .menu-tab{ flex:0 0 auto; padding:7px 10px; }
-  .tab-frame{ min-height: calc(var(--app-h) - var(--topH) + 40px); }
-}
+      .header-text p {
+        font-size: 0.8rem;
+      }
+    }
 
-/* cegah item fokus menyebabkan zoom aneh */
-button{ -webkit-tap-highlight-color: transparent; }
+    /* MENU TABS */
+    .menu-card {
+      background: radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.14) 0, transparent 40%), var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 10px 12px;
+      border: 1px solid var(--card-border);
+    }
 
-</style>
+    .menu-title {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .menu-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .menu-tab {
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      border: 1px solid rgba(0, 255, 255, 0.35);
+      background: rgba(2, 20, 40, 0.85);
+      color: #e6f4ff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .menu-tab span.icon {
+      font-size: 1rem;
+    }
+
+    .menu-tab.active {
+      background: linear-gradient(135deg, #00c0ff, #0089a8);
+      border-color: transparent;
+      box-shadow: 0 0 14px rgba(0, 255, 255, 0.5);
+      color: #ffffff;
+    }
+
+    .menu-tab:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.55);
+    }
+
+    /* AREA IFRAME KONTEN */
+    .content-card {
+      background: radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.12) 0, transparent 40%), var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 6px;
+      border: 1px solid var(--card-border);
+      min-height: 70vh;
+    }
+
+    .tab-content {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-frame {
+      width: 100%;
+      height: calc(100vh - 200px); /* menyesuaikan tinggi layar, supaya scroll di dalam dashboard */
+      border: none;
+      border-radius: 12px;
+      background-color: #000814;
+    }
+
+    
+  
+    @media (max-width: 980px) {
+      .content-card {
+        height: calc(var(--vh, 1vh) * 100 - 260px);
+      }
+    }
+    @media (max-width: 640px) {
+      .content-card {
+        height: calc(var(--vh, 1vh) * 100 - 280px);
+      }
+      .header-text h1 { white-space: normal; }
+    }
+
+  </style>
 </head>
 <body>
   <div class="app-shell">
     <!-- HEADER ATAS -->
-    <header class="app-header card">
+    <header class="app-header">
       <div class="header-left">
         <div class="logo-group-main">
+          <!-- pastikan nama file logo sesuai dengan folder kamu -->
           <img src="logo-bbt.png" alt="Logo Balai Besar Tekstil" class="logo-bbt" />
-          <img src="logo-issc.png" alt="Logo Industrial Services &amp; Solution Center" class="logo-issc" />
+          <img src="logo-issc.png" alt="Logo Industrial Services & Solution Center" class="logo-issc" />
         </div>
         <div class="header-text">
           <h1>PORTAL DASHBOARD BLU</h1>
@@ -237,70 +298,69 @@ button{ -webkit-tap-highlight-color: transparent; }
     </section>
 
     <!-- KONTEN DASHBOARD (IFRAME) -->
-    <section class="content-card card">
+    <section class="content-card">
+      <!-- iframe 1: dashboard penerimaan 14 layanan -->
       <div class="tab-content active" id="tab-penerimaan">
+        <!--
+          KODE INI MENGASUMSIKAN:
+          - File dashboard penerimaan: index.html
+          Kalau nanti file ini kamu jadikan index.html utama,
+          ganti src di bawah dengan nama baru file dashboard, misalnya "dashboard_penerimaan.html"
+        -->
         <iframe src="dashboard_penerimaan.html" class="tab-frame" title="Dashboard Penerimaan 14 Layanan"></iframe>
       </div>
 
+      <!-- iframe 2: dashboard IKM & NPS -->
       <div class="tab-content" id="tab-ikm-nps">
-        <iframe src="index_ikm_nps_autoload.html" class="tab-frame" title="Dashboard IKM &amp; NPS"></iframe>
+        <!--
+          KODE INI MENGASUMSIKAN:
+          - File dashboard IKM & NPS: index_ikm_nps.html
+        -->
+        <iframe src="index_ikm_nps_autoload.html" class="tab-frame" title="Dashboard IKM & NPS"></iframe>
       </div>
     </section>
   </div>
 
   <script>
+    // Script untuk ganti tab
+    const tabs = document.querySelectorAll(".menu-tab");
+    const contents = document.querySelectorAll(".tab-content");
 
-// Hitung tinggi viewport yang akurat (iOS/Android address bar) + tinggi konten
-function setViewportVars(){
-  const vv = window.visualViewport;
-  const h = (vv && vv.height) ? vv.height : window.innerHeight;
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const targetId = tab.getAttribute("data-target");
 
-  document.documentElement.style.setProperty('--app-h', `${h}px`);
+        // aktif/nonaktif tombol
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
 
-  const header = document.querySelector('header.app-header');
-  const menu = document.querySelector('.menu-card');
-
-  const headerH = header ? header.offsetHeight : 0;
-  const menuH = menu ? menu.offsetHeight : 0;
-
-  // gap antar card (14px) * 2 + padding total (kira2 24px)
-  const topH = headerH + menuH + 28 + 24;
-
-  // Pastikan tidak negatif/terlalu kecil (landscape HP sering sangat pendek)
-  const contentH = Math.max(180, h - topH);
-
-  document.documentElement.style.setProperty('--topH', `${topH}px`);
-  document.documentElement.style.setProperty('--contentH', `${contentH}px`);
-}
-
-window.addEventListener('resize', setViewportVars, {passive:true});
-window.addEventListener('orientationchange', () => setTimeout(setViewportVars, 250), {passive:true});
-document.addEventListener('DOMContentLoaded', () => {
-  setViewportVars();
-
-  // Tabs
-  const tabs = document.querySelectorAll('.menu-tab');
-  const contents = document.querySelectorAll('.tab-content');
-
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      const targetId = tab.getAttribute('data-target');
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-
-      contents.forEach(c => c.classList.toggle('active', c.id === targetId));
-
-      // setelah ganti tab, ukur ulang (kadang tinggi menu berubah karena wrap)
-      setTimeout(setViewportVars, 60);
+        // tampilkan konten yang sesuai
+        contents.forEach(c => {
+          if (c.id === targetId) {
+            c.classList.add("active");
+          } else {
+            c.classList.remove("active");
+          }
+        });
+      });
     });
-  });
-});
+  
+    // Fix 100vh di mobile (address bar naik-turun) agar iframe tidak "loncat" saat scroll
+    function setVh() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    setVh();
+    window.addEventListener('resize', setVh);
 
-if (window.visualViewport){
-  window.visualViewport.addEventListener('resize', setViewportVars, {passive:true});
-  window.visualViewport.addEventListener('scroll', setViewportVars, {passive:true});
-}
+    // Optional: tombol refresh iframe saat file Excel di server diganti
+    function refreshActiveIframe() {
+      const active = document.querySelector('.tab-content.active iframe');
+      if (!active) return;
+      const base = active.getAttribute('src').split('?')[0];
+      active.setAttribute('src', `${base}?v=${Date.now()}`);
+    }
 
-</script>
+  </script>
 </body>
 </html>
